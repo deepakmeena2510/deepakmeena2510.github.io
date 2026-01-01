@@ -9,7 +9,6 @@ body{margin:0;font-family:sans-serif;background:#f4f6f8}
 .box{background:#fff;margin:15px;padding:16px;border-radius:14px;box-shadow:0 5px 12px rgba(0,0,0,.1)}
 .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .btn{padding:8px 16px;border:none;border-radius:20px;background:#2ecc71;color:#fff}
-.btn:active{transform:scale(.95)}
 .popup,.loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 .card{background:#fff;padding:20px;border-radius:14px;width:85%}
 input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #ccc}
@@ -24,78 +23,97 @@ input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid 
 <div class="header">💼 Wallet</div>
 
 <div class="box">
-  <b>Available Balance:</b> ₹ <span id="bal">0</span>
+<b>Available Balance:</b> ₹ <span id="bal">0</span>
 </div>
 
 <div class="box" id="list"></div>
 
 <!-- UPI POPUP -->
 <div class="popup" id="popup">
-  <div class="card">
-    <h3>UPI Details</h3>
-    <input id="name" placeholder="Your Name">
-    <input id="upi" placeholder="UPI ID">
-    <br><br>
-    <button class="btn" onclick="submitUPI()">Submit</button>
-  </div>
+<div class="card">
+<h3>UPI Details</h3>
+<input id="name" placeholder="Your Name">
+<input id="upi" placeholder="UPI ID">
+<br><br>
+<button class="btn" onclick="submitUPI()">Submit</button>
+</div>
 </div>
 
-<!-- PROCESSING -->
+<!-- LOADER -->
 <div class="loader" id="loader">
-  <div class="card center">
-    <div class="spinner"></div>
-    <p id="status">Processing...</p>
-  </div>
+<div class="card center">
+<div class="spinner"></div>
+<p id="status">Processing...</p>
+</div>
 </div>
 
 <script>
-let balance = parseInt(localStorage.getItem("balance")) || 100;
+let balance = Number(localStorage.getItem("balance") || 100);
 document.getElementById("bal").innerText = balance;
 
-let withdrawAmt = 0;
 let history = JSON.parse(localStorage.getItem("history") || "[]");
+let usedOnce = JSON.parse(localStorage.getItem("usedOnce") || "[]");
 
-let amounts = [10,30,50,100,200,500];
+let withdrawLevels = [
+  {amt:10, once:true},
+  {amt:30, once:true},
+  {amt:50, once:true},
+  {amt:100, once:true},
+  {amt:200, once:false},
+  {amt:500, once:false}
+];
+
 let list = document.getElementById("list");
+let withdrawAmt = 0;
 
-amounts.forEach(a=>{
-  let r = document.createElement("div");
-  r.className="row";
-  r.innerHTML = `<div>Withdraw ₹${a}</div><button class="btn">Apply</button>`;
-  r.querySelector("button").onclick=()=>{
-    if(balance<a){alert("Balance कम है");return;}
-    withdrawAmt=a;
-    document.getElementById("popup").style.display="flex";
-  };
-  list.appendChild(r);
-});
+function render(){
+  list.innerHTML="";
+  withdrawLevels.forEach(w=>{
+    if(w.once && usedOnce.includes(w.amt)) return;
+
+    let r=document.createElement("div");
+    r.className="row";
+    r.innerHTML=`<div>Withdraw ₹${w.amt}</div><button class="btn">Apply</button>`;
+    r.querySelector("button").onclick=()=>{
+      if(balance<w.amt){alert("Balance कम है");return;}
+      withdrawAmt=w.amt;
+      document.getElementById("popup").style.display="flex";
+    };
+    list.appendChild(r);
+  });
+}
+
+render();
 
 function submitUPI(){
-  let n=document.getElementById("name").value;
-  let u=document.getElementById("upi").value;
+  let n=name.value,u=upi.value;
   if(!n||!u){alert("Details भरें");return;}
 
-  document.getElementById("popup").style.display="none";
-  document.getElementById("loader").style.display="flex";
-  document.getElementById("status").innerText="Processing...";
+  popup.style.display="none";
+  loader.style.display="flex";
+  status.innerText="⏳ Processing...";
 
   setTimeout(()=>{
-    document.getElementById("status").innerText="Pending...";
-    history.push({
-      amt:withdrawAmt,
-      status:"Pending",
-      date:new Date().toLocaleString()
-    });
+    status.innerText="🔔 Pending";
+
     balance-=withdrawAmt;
     localStorage.setItem("balance",balance);
+    bal.innerText=balance;
+
+    history.push({amt:withdrawAmt,status:"Pending",time:new Date().toLocaleString()});
     localStorage.setItem("history",JSON.stringify(history));
-    document.getElementById("bal").innerText=balance;
+
+    if(withdrawLevels.find(x=>x.amt==withdrawAmt).once){
+      usedOnce.push(withdrawAmt);
+      localStorage.setItem("usedOnce",JSON.stringify(usedOnce));
+    }
 
     setTimeout(()=>{
       history[history.length-1].status="Success";
       localStorage.setItem("history",JSON.stringify(history));
-      document.getElementById("loader").style.display="none";
-      alert("Withdraw Success!");
+      loader.style.display="none";
+      alert("✅ Withdraw Success");
+      render();
     },3000);
 
   },2000);

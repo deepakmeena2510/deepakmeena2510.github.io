@@ -2,20 +2,56 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Home</title>
-<script src="app.js"></script>
-<style>
-body{font-family:Arial;text-align:center;}
-button{padding:10px 20px;background:red;color:white;border:none;}
-</style>
+<title>Daily Tasks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body onload="checkLogin()">
+<body>
 
-<h1>Welcome to My App</h1>
-<p>App successfully login ho gaya 🎉</p>
+<h1>Daily Tasks</h1>
 
-<button onclick="logout()">Logout</button>
+<p>Balance: ₹<span id="bal">0</span></p>
+
+<button onclick="earn()">Click & Earn ₹2</button>
+<br><br>
+
+<button onclick="goWallet()">Go to Wallet</button>
+<br><br>
+
+<button onclick="goSettings()">⚙ Settings</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "PASTE_KEY",
+  authDomain: "PASTE_DOMAIN",
+  projectId: "PASTE_PROJECT_ID",
+  appId: "PASTE_APP_ID"
+});
+
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user) location.href="index.html";
+});
+
+let bal = localStorage.getItem("balance") || 0;
+document.getElementById("bal").innerText = bal;
+
+function earn(){
+  bal = Number(bal) + 2;
+  localStorage.setItem("balance", bal);
+  document.getElementById("bal").innerText = bal;
+}
+
+function goWallet(){
+  location.href="wallet.html";
+}
+
+function goSettings(){
+  location.href="settings.html";
+}
+</script>
 
 </body>
 </html>

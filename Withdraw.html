@@ -1,25 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Withdraw</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+}
+
+.box{
+  background:#fff;
+  margin:15px;
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  text-align:center;
+  font-size:16px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  padding:12px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  background:#2ecc71;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button:disabled{
+  background:#ccc;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Balance -->
+<div class="box">
+  💰 Balance: ₹ <span id="bal">0</span>
+</div>
+
+<!-- UPI BOX -->
+<div class="box">
+  <h3>🏦 UPI ID</h3>
+  <input type="text" id="upi" placeholder="example@upi">
+</div>
+
+<!-- Withdraw Buttons -->
+<div id="withdrawList"></div>
+
 <script>
 // ================= BALANCE =================
 let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// ================= FORCE LEVEL UPDATE =================
-// हर बार balance से level calculate होगा
+// ================= AUTO LEVEL =================
 let withdrawLevel = 1;
-
 if(balance >= 500){
   withdrawLevel = 4;
 }else if(balance >= 300){
   withdrawLevel = 3;
 }else if(balance >= 100){
-  withdrawLevel = 2}else{
-  withdrawLevel = 1;
+  withdrawLevel = 2;
 }
-
-// save latest level
 localStorage.setItem("withdrawLevel", withdrawLevel);
 
-// ================= WITHDRAW LEVELS =================
+// ================= LEVELS =================
 let withdrawLevels = [
   {amt:10, once:true, level:1},
   {amt:30, once:true, level:1},
@@ -31,8 +93,11 @@ let withdrawLevels = [
 ];
 
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
+let history = JSON.parse(localStorage.getItem("withdrawHistory") || "[]");
+
 let list = document.getElementById("withdrawList");
 
+// ================= RENDER =================
 function render(){
   list.innerHTML = "";
 
@@ -47,24 +112,44 @@ function render(){
     btn.innerText = "Withdraw ₹" + w.amt;
 
     btn.onclick = function(){
+      let upi = document.getElementById("upi").value.trim();
+
+      if(upi === "" || !upi.includes("@")){
+        alert("❌ सही UPI ID डालो");
+        return;
+      }
+
       if(balance < w.amt){
         alert("❌ Balance कम है");
         return;
       }
 
+      // deduct balance
       balance -= w.amt;
       localStorage.setItem("balance", balance);
       document.getElementById("bal").innerText = balance;
 
+      // one-time remove
       if(w.once){
         used.push(w.amt);
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
 
-      alert("✅ Withdraw Request ₹" + w.amt);
-      location.reload(); // 🔥 सबसे ज़रूरी
+      // save withdraw history
+      history.push({
+        amount: w.amt,
+        upi: upi,
+        status: "Pending",
+        time: new Date().toLocaleString()
+      });
+      localStorage.setItem("withdrawHistory", JSON.stringify(history));
+
+      alert("✅ Withdraw Request भेज दी गई\n₹"+w.amt+"\nStatus: Pending");
+
+      location.reload();
     };
 
+    div.innerHTML = `<b>Withdraw ₹${w.amt}</b>`;
     div.appendChild(btn);
     list.appendChild(div);
   });
@@ -72,3 +157,6 @@ function render(){
 
 render();
 </script>
+
+</body>
+</html>

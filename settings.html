@@ -1,23 +1,140 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>Settings</title>
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f2f2f2;
+  margin:0;
+}
+.dark{
+  background:#121212;
+  color:#fff;
+}
+.header{
+  padding:15px;
+  background:#2196f3;
+  color:#fff;
+  text-align:center;
+  font-size:20px;
+}
+.card{
+  background:#fff;
+  margin:15px;
+  padding:15px;
+  border-radius:10px;
+}
+.dark .card{
+  background:#1e1e1e;
+}
+button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+}
+.toggle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logout{
+  background:red;
+  color:#fff;
+}
+</style>
 </head>
 
-<body class="app">
-<div class="topbar">Settings</div>
+<body id="body">
 
-<div class="container">
-  <button class="btn" onclick="logout()">Logout</button>
+<div class="header">⚙️ Settings</div>
+
+<div class="card">
+  <p><b>User Name:</b> <span id="username"></span></p>
+  <p><b>Email:</b> <span id="email"></span></p>
+  <p><b>User ID:</b> <span id="userid"></span></p>
+  <p><b>Join Date:</b> <span id="joindate"></span></p>
+</div>
+
+<div class="card">
+  <p><b>Current Balance:</b> ₹<span id="balance"></span></p>
+  <p><b>Last Withdraw Status:</b> <span id="withdraw"></span></p>
+</div>
+
+<div class="card">
+  <h3>🔐 Change Password (Demo)</h3>
+  <input type="password" placeholder="New Password">
+  <button onclick="alert('Password changed (Demo)')">Change Password</button>
+</div>
+
+<div class="card">
+  <div class="toggle">
+    <span>🔔 Notifications</span>
+    <input type="checkbox" id="notify">
+  </div>
+</div>
+
+<div class="card">
+  <div class="toggle">
+    <span>🌗 Dark Mode</span>
+    <input type="checkbox" id="dark">
+  </div>
+</div>
+
+<div class="card">
+  <button class="logout" onclick="logout()">Logout</button>
 </div>
 
 <script>
+// DEMO DATA AUTO SET
+if(!localStorage.getItem("userid")){
+  localStorage.setItem("userid","UID"+Math.floor(Math.random()*100000));
+  localStorage.setItem("joindate",new Date().toLocaleDateString());
+  localStorage.setItem("withdraw","Pending");
+}
+
+// SHOW DATA
+let email = localStorage.getItem("email") || "demo@gmail.com";
+document.getElementById("email").innerText = email;
+document.getElementById("username").innerText = email.split("@")[0];
+document.getElementById("userid").innerText = localStorage.getItem("userid");
+document.getElementById("joindate").innerText = localStorage.getItem("joindate");
+document.getElementById("balance").innerText = localStorage.getItem("balance") || 0;
+document.getElementById("withdraw").innerText = localStorage.getItem("withdraw");
+
+// DARK MODE
+document.getElementById("dark").checked = localStorage.getItem("dark")=="1";
+if(localStorage.getItem("dark")=="1"){
+  document.body.classList.add("dark");
+}
+document.getElementById("dark").onchange = function(){
+  if(this.checked){
+    document.body.classList.add("dark");
+    localStorage.setItem("dark","1");
+  }else{
+    document.body.classList.remove("dark");
+    localStorage.setItem("dark","0");
+  }
+};
+
+// NOTIFICATION
+document.getElementById("notify").checked = localStorage.getItem("notify")=="1";
+document.getElementById("notify").onchange = function(){
+  localStorage.setItem("notify", this.checked ? "1" : "0");
+};
+
+// LOGOUT
 function logout(){
   localStorage.clear();
-  window.location="index.html";
+  location.href="index.html";
 }
 </script>
+
 </body>
-</html>
+  </html>

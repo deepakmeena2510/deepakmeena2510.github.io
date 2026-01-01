@@ -2,11 +2,12 @@
 <html>
 <head>
 <title>Wallet</title>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="app">
+
 <div class="topbar">Wallet</div>
 
 <div class="container">
@@ -14,16 +15,16 @@
     <h2>Balance: ₹ <span id="bal">0</span></h2>
   </div>
 
-  <button class="btn" onclick="withdraw()">Withdraw ₹50</button>
+  <!-- DIRECT WITHDRAW PAGE OPEN -->
+  <button class="btn" onclick="window.location.href='Withdraw.html'">
+    Withdraw
+  </button>
 </div>
 
 <script>
-document.getElementById("bal").innerText=
-localStorage.getItem("balance")||0;
-
-function withdraw(){
-  alert("Withdraw request sent (Demo)");
-}
+  document.getElementById("bal").innerText =
+    localStorage.getItem("balance") || 0;
 </script>
+
 </body>
-</html>
+</html>l

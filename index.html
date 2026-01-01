@@ -5,6 +5,11 @@
 <title>Simple Earning App</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
 <style>
 body{
   font-family: Arial;
@@ -27,6 +32,12 @@ button{
   font-size:16px;
   border-radius:8px;
 }
+input{
+  padding:12px;
+  width:90%;
+  margin:5px 0;
+}
+.hidden{display:none;}
 </style>
 </head>
 
@@ -34,46 +45,125 @@ button{
 
 <h2>💰 Simple Earning App</h2>
 
-<div class="box">
-  <h3>Balance</h3>
-  <h1>₹ <span id="bal">0</span></h1>
+<!-- LOGIN PAGE -->
+<div id="loginBox" class="box">
+  <h3>Login / Signup</h3>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login / Signup</button>
 </div>
 
-<div class="box">
-  <h3>Task 1</h3>
-  <button onclick="earn(2)">Click & Earn ₹2</button>
-</div>
+<!-- APP PAGE -->
+<div id="appBox" class="hidden">
 
-<div class="box">
-  <h3>Task 2</h3>
-  <button onclick="earn(5)">Watch & Earn ₹5</button>
-</div>
+  <div class="box">
+    <h3>Balance</h3>
+    <h1>₹ <span id="bal">0</span></h1>
+  </div>
 
-<div class="box">
-  <h3>Withdraw</h3>
-  <input id="upi" placeholder="Enter UPI ID" style="padding:10px;width:90%"><br><br>
-  <button onclick="withdraw()">Withdraw ₹50</button>
+  <div class="box">
+    <h3>Task 1</h3>
+    <button onclick="earn(2)">Click & Earn ₹2</button>
+  </div>
+
+  <div class="box">
+    <h3>Task 2</h3>
+    <button onclick="earn(5)">Watch & Earn ₹5</button>
+  </div>
+
+  <div class="box">
+    <h3>Withdraw</h3>
+    <input id="upi" placeholder="Enter UPI ID">
+    <button onclick="withdraw()">Withdraw ₹50</button>
+  </div>
+
+  <div class="box">
+    <button style="background:#e74c3c" onclick="logout()">Logout</button>
+  </div>
+
 </div>
 
 <script>
-let balance = localStorage.getItem("balance") || 0;
-document.getElementById("bal").innerText = balance;
+/* 🔥 Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyCPXY9pfY2vrKNEOgenBkYpQqa2SSUQLTk",
+  authDomain: "talks-b6037.firebaseapp.com",
+  databaseURL: "https://talks-b6037-default-rtdb.firebaseio.com",
+  projectId: "talks-b6037",
+  storageBucket: "talks-b6037.appspot.com",
+  messagingSenderId: "231660762364",
+  appId: "1:231660762364:web:e1a9589b00d11221d0d379"
+};
 
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+let currentUser = null;
+let balance = 0;
+
+/* 🔐 Login / Signup */
+function login(){
+  let email = emailInput.value;
+  let pass = password.value;
+
+  auth.signInWithEmailAndPassword(email, pass)
+  .catch(()=>{
+    return auth.createUserWithEmailAndPassword(email, pass);
+  });
+}
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    currentUser = user;
+    loginBox.classList.add("hidden");
+    appBox.classList.remove("hidden");
+
+    db.ref("users/"+user.uid).once("value", snap=>{
+      if(snap.exists()){
+        balance = snap.val().balance;
+      }else{
+        balance = 0;
+        db.ref("users/"+user.uid).set({balance:0});
+      }
+      bal.innerText = balance;
+    });
+  }
+});
+
+/* 💰 Earn */
 function earn(amount){
-  balance = Number(balance) + amount;
-  localStorage.setItem("balance", balance);
-  document.getElementById("bal").innerText = balance;
+  balance += amount;
+  bal.innerText = balance;
+  db.ref("users/"+currentUser.uid).update({balance});
   alert("₹"+amount+" added!");
 }
 
+/* 💸 Withdraw */
 function withdraw(){
   let upi = document.getElementById("upi").value;
-  if(!upi){ alert("UPI ID daalo"); return; }
-  if(balance < 50){ alert("Minimum ₹50 chahiye"); return; }
+  if(!upi) return alert("UPI ID daalo");
+  if(balance < 50) return alert("Minimum ₹50 chahiye");
+
   balance -= 50;
-  localStorage.setItem("balance", balance);
-  document.getElementById("bal").innerText = balance;
+  bal.innerText = balance;
+
+  db.ref("withdraws").push({
+    user: currentUser.email,
+    upi: upi,
+    amount: 50,
+    status: "Pending",
+    time: Date.now()
+  });
+
+  db.ref("users/"+currentUser.uid).update({balance});
   alert("Withdraw request sent!");
+}
+
+/* 🚪 Logout */
+function logout(){
+  auth.signOut();
+  location.reload();
 }
 </script>
 

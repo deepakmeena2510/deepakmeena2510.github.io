@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Withdraw</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+}
+
+.box{
+  background:#fff;
+  margin:15px;
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  text-align:center;
+  font-size:16px;
+}
+
+button{
+  padding:12px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  background:#2ecc71;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  💰 Balance: ₹ <span id="bal">0</span>
+</div>
+
+<div id="withdrawList"></div>
+
+<script>
+let balance = parseInt(localStorage.getItem("balance") || 0);
+document.getElementById("bal").innerText = balance;
+
+// one-time withdraw levels
+let oneTimeLevels = [10, 30, 50, 100];
+
+// permanent levels
+let permanentLevels = [200, 300, 500];
+
+// already used withdraws
+let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
+
+let list = document.getElementById("withdrawList");
+
+// render buttons
+function render(){
+  list.innerHTML = "";
+
+  oneTimeLevels.forEach(amount=>{
+    if(!used.includes(amount)){
+      list.innerHTML += `
+      <div class="box">
+        Withdraw ₹${amount}
+        <br><br>
+        <button onclick="withdraw(${amount}, true)">Withdraw</button>
+      </div>`;
+    }
+  });
+
+  permanentLevels.forEach(amount=>{
+    list.innerHTML += `
+    <div class="box">
+      Withdraw ₹${amount}
+      <br><br>
+      <button onclick="withdraw(${amount}, false)">Withdraw</button>
+    </div>`;
+  });
+}
+
+function withdraw(amount, oneTime){
+  if(balance < amount){
+    alert("❌ Balance kam hai");
+    return;
+  }
+
+  balance -= amount;
+  localStorage.setItem("balance", balance);
+  document.getElementById("bal").innerText = balance;
+
+  if(oneTime){
+    used.push(amount);
+    localStorage.setItem("usedWithdraw", JSON.stringify(used));
+  }
+
+  alert("✅ Withdraw Request Sent ₹" + amount);
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>

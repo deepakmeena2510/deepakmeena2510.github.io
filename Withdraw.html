@@ -1,76 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Withdraw</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f2f2f2;
-}
-
-.box{
-  background:#fff;
-  margin:15px;
-  padding:18px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  text-align:center;
-  font-size:16px;
-}
-
-button{
-  padding:12px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  background:#2ecc71;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-
-button:disabled{
-  background:#ccc;
-}
-</style>
-</head>
-
-<body>
-
-<div class="box">
-  💰 Balance: ₹ <span id="bal">0</span><br>
-  ⭐ Withdraw Level: <span id="level">1</span>
-</div>
-
-<div id="withdrawList"></div>
-
 <script>
 // ================= BALANCE =================
 let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// ================= AUTO LEVEL SYSTEM =================
-let withdrawLevel = parseInt(localStorage.getItem("withdrawLevel")) || 1;
+// ================= FORCE LEVEL UPDATE =================
+// हर बार balance से level calculate होगा
+let withdrawLevel = 1;
 
-function autoUpdateWithdrawLevel(){
-  if(balance >= 500){
-    withdrawLevel = 4;
-  }else if(balance >= 300){
-    withdrawLevel = 3;
-  }else if(balance >= 100){
-    withdrawLevel = 2;
-  }else{
-    withdrawLevel = 1;
-  }
-  localStorage.setItem("withdrawLevel", withdrawLevel);
-  document.getElementById("level").innerText = withdrawLevel;
+if(balance >= 500){
+  withdrawLevel = 4;
+}else if(balance >= 300){
+  withdrawLevel = 3;
+}else if(balance >= 100){
+  withdrawLevel = 2}else{
+  withdrawLevel = 1;
 }
 
-autoUpdateWithdrawLevel();
+// save latest level
+localStorage.setItem("withdrawLevel", withdrawLevel);
 
 // ================= WITHDRAW LEVELS =================
 let withdrawLevels = [
@@ -83,9 +30,7 @@ let withdrawLevels = [
   {amt:500, once:false, level:4}
 ];
 
-// used one-time withdraws
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
-
 let list = document.getElementById("withdrawList");
 
 function render(){
@@ -116,9 +61,8 @@ function render(){
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
 
-      autoUpdateWithdrawLevel();
-      alert("✅ Withdraw Request भेज दी गई ₹" + w.amt);
-      render();
+      alert("✅ Withdraw Request ₹" + w.amt);
+      location.reload(); // 🔥 सबसे ज़रूरी
     };
 
     div.appendChild(btn);
@@ -128,6 +72,3 @@ function render(){
 
 render();
 </script>
-
-</body>
-</html>

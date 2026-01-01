@@ -1,4 +1,12 @@
-apiKey
-authDomain
-databaseURL
-projectId
+<h2>Admin Panel</h2>
+
+<p>All users demo control</p>
+
+<button onclick="reset()">Reset All Balance</button>
+
+<script>
+function reset(){
+  localStorage.setItem("balance", 0);
+  alert("All balances reset");
+}
+</script>

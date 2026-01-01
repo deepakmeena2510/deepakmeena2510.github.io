@@ -1,0 +1,21 @@
+<h2>Daily Tasks</h2>
+
+<p>Balance: ₹<span id="bal">0</span></p>
+
+<button onclick="earn()">Click & Earn ₹2</button><br><br>
+<button onclick="wallet()">Go to Wallet</button>
+
+<script>
+let balance = Number(localStorage.getItem("balance")) || 0;
+document.getElementById("bal").innerText = balance;
+
+function earn(){
+  balance += 2;
+  localStorage.setItem("balance", balance);
+  document.getElementById("bal").innerText = balance;
+}
+
+function wallet(){
+  window.location.href="wallet.html";
+}
+</script>

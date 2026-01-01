@@ -2,283 +2,206 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Pro Wallet</title>
+<title>Withdrawal System</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 :root {
-  --primary: #16a085;
-  --secondary: #2ecc71;
-  --bg: #f8f9fa;
-  --card: #ffffff;
-  --text: #2c3e50;
+  --primary: #c0392b; /* Petrol pump jaisa red/dark theme */
+  --bg: #f2f2f2;
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-family: sans-serif;
   background: var(--bg);
-  color: var(--text);
-  padding-bottom: 80px; /* Space for bottom nav */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Header with Gradient */
 .header {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff;
-  padding: 30px 15px;
+  background: #2c3e50;
+  color: white;
+  width: 100%;
+  padding: 20px 0;
   text-align: center;
   font-size: 22px;
   font-weight: bold;
-  border-radius: 0 0 25px 25px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Balance Card */
-.balance-card {
-  background: var(--card);
-  margin: -25px 20px 20px;
-  padding: 25px;
-  border-radius: 15px;
+.balance-section {
+  background: white;
+  width: 90%;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.balance-card span {
-  font-size: 32px;
-  color: var(--primary);
-  font-weight: 800;
+#bal {
+  font-size: 30px;
+  color: #27ae60;
+  font-weight: bold;
 }
 
-/* Withdraw List */
-.section-title { margin: 20px; font-size: 18px; color: #7f8c8d; }
+.withdraw-container {
+  width: 90%;
+}
 
-.withdraw-row {
-  background: var(--card);
-  margin: 10px 20px;
-  padding: 15px 20px;
-  border-radius: 12px;
+.withdraw-card {
+  background: white;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.3s;
-  border: 1px solid #eee;
+  border-left: 5px solid var(--primary);
 }
 
-.withdraw-row:active { transform: scale(0.97); }
+.amount { font-size: 20px; font-weight: bold; }
 
-.amount-text { font-size: 18px; font-weight: 600; }
-
-.btn-withdraw {
-  background: linear-gradient(to right, var(--secondary), #27ae60);
+.btn-draw {
+  background: var(--primary);
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 25px;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-/* Popup Overlay */
+/* Popup */
 .popup {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.8);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
 }
 
-.card {
-  background: #fff;
-  width: 85%;
+.modal {
+  background: white;
   padding: 25px;
-  border-radius: 20px;
+  border-radius: 15px;
+  width: 80%;
   text-align: center;
-  animation: slideUp 0.3s ease-out;
 }
 
-@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-input, select {
+input {
   width: 100%;
   padding: 12px;
-  margin-top: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   box-sizing: border-box;
-  font-size: 16px;
 }
 
-/* Custom Bottom Nav */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; width: 100%;
-  background: #fff;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0;
-  border-top: 1px solid #eee;
-}
-
-.nav-item { text-align: center; color: #95a5a6; font-size: 12px; text-decoration: none; }
-.nav-item.active { color: var(--primary); }
-
-/* Status Classes */
-.pending { color: #f39c12; font-weight: bold; }
-.success { color: #27ae60; font-weight: bold; }
-.fail { color: #e74c3c; font-weight: bold; }
-
-.spinner {
-  width: 50px; height: 50px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 10px auto;
-}
-@keyframes spin { 100% { transform: rotate(3600deg); } }
+.status { font-weight: bold; margin-top: 10px; }
 </style>
 </head>
 
 <body>
 
-<div class="header">💰 Cash Wallet</div>
+<div class="header">Withdrawal Center</div>
 
-<div class="balance-card">
-  <p style="margin:0; color:#95a5a6;">Main Balance</p>
+<div class="balance-section">
+  <p style="margin:0; color:#666;">Aapka Balance</p>
   ₹ <span id="bal">0</span>
 </div>
 
-<div class="section-title">Withdrawal Options</div>
-<div id="withdrawList"></div>
-
-<div class="popup" id="payPopup">
-  <div class="card">
-    <h3 style="margin-top:0">Redeem Money</h3>
-    <input id="amountInput" readonly style="background:#f9f9f9; text-align:center; font-weight:bold;">
-    <input id="upi" placeholder="Enter UPI ID (e.g. name@ybl)">
-
-    <select id="method">
-      <option value="">Select Method</option>
-      <option>Paytm Wallet</option>
-      <option>PhonePe / UPI</option>
-      <option>Google Pay</option>
-    </select>
-
-    <br><br>
-    <button class="btn-withdraw" style="width:100%" onclick="confirmWithdraw()">Withdraw Now</button>
-    <p style="color:red; cursor:pointer; margin-top:15px;" onclick="payPopup.style.display='none'">Cancel</p>
+<div class="withdraw-container" id="list">
   </div>
-</div>
 
-<div class="popup" id="statusPopup">
-  <div class="card">
-    <div id="loader" class="spinner"></div>
-    <p id="statusText" style="font-size:18px">Processing...</p>
+<div class="popup" id="pop">
+  <div class="modal">
+    <h3 id="popTitle">Withdraw ₹10</h3>
+    <input type="text" id="upi" placeholder="Enter UPI ID">
+    <button class="btn-draw" style="width:100%" onclick="finalSubmit()">Confirm Transfer</button>
+    <p style="color:red; cursor:pointer;" onclick="closePop()">Cancel</p>
+    <div id="stat" class="status"></div>
   </div>
-</div>
-
-<div class="bottom-nav">
-  <a href="home.html" class="nav-item">🏠<br>Home</a>
-  <a href="Withdraw.html" class="nav-item active">💼<br>Wallet</a>
-  <a href="refer.html" class="nav-item">👥<br>Refer</a>
-  <a href="history.html" class="nav-item">📋<br>History</a>
 </div>
 
 <script>
-// Data Initialization
-if(!localStorage.getItem("balance")){
-  localStorage.setItem("balance", 500);
-}
-let balance = Number(localStorage.getItem("balance"));
-document.getElementById("bal").innerText = balance;
+// Data aur Rules
+let balance = Number(localStorage.getItem("balance") || 500);
+let used = JSON.parse(localStorage.getItem("usedLevels") || "[]");
+let levels = [10, 30, 50, 100, 200, 300];
+let currentAmt = 0;
 
-let usedLevels = JSON.parse(localStorage.getItem("usedLevels") || "[]");
-let amounts = [10, 30, 50, 100, 200, 500];
-
-function renderWithdraw(){
-  const list = document.getElementById("withdrawList");
+function updateDisplay() {
+  document.getElementById("bal").innerText = balance;
+  const list = document.getElementById("list");
   list.innerHTML = "";
-  amounts.forEach(a => {
-    // Rule: ₹10 to ₹100 remove after one use
-    if(a <= 100 && usedLevels.includes(a)) return;
+
+  levels.forEach(amt => {
+    // ₹10, 30, 50, 100 ek baar use hone par hat jayenge
+    if(amt <= 100 && used.includes(amt)) return;
 
     let div = document.createElement("div");
-    div.className = "withdraw-row";
+    div.className = "withdraw-card";
     div.innerHTML = `
-      <div class="amount-text">₹ ${a}</div>
-      <button class="btn-withdraw">Withdraw</button>
+      <div class="amount">₹${amt}</div>
+      <button class="btn-draw" onclick="openPop(${amt})">Withdraw</button>
     `;
-    div.querySelector("button").onclick = () => {
-      document.getElementById("amountInput").value = "Amount: ₹" + a;
-      document.getElementById("amountInput").dataset.val = a;
-      document.getElementById("payPopup").style.display = "flex";
-    };
     list.appendChild(div);
   });
 }
 
-function confirmWithdraw(){
-  let amt = Number(document.getElementById("amountInput").dataset.val);
-  let upiId = document.getElementById("upi").value.trim();
-  let m = document.getElementById("method").value;
+function openPop(amt) {
+  currentAmt = amt;
+  document.getElementById("popTitle").innerText = "Withdraw ₹" + amt;
+  document.getElementById("pop").style.display = "flex";
+  document.getElementById("stat").innerText = "";
+}
 
-  if(!upiId || !m){
-    showStatus("❌ Details bhariye!","fail");
+function closePop() {
+  document.getElementById("pop").style.display = "none";
+}
+
+function finalSubmit() {
+  let upiVal = document.getElementById("upi").value;
+  let stat = document.getElementById("stat");
+
+  if(!upiVal.includes("@")) {
+    alert("Sahi UPI ID daalein");
     return;
   }
-  if(balance < amt){
-    showStatus("❌ Balance kam hai!","fail");
+
+  if(balance < currentAmt) {
+    alert("Balance kam hai");
     return;
   }
 
-  document.getElementById("payPopup").style.display = "none";
-  showStatus("⏳ Processing...","pending");
+  stat.innerText = "⏳ Processing...";
+  stat.style.color = "orange";
 
-  // Step 1: Processing Status
   setTimeout(() => {
-    showStatus("🔔 Payment Pending...","pending");
-  }, 2000);
-
-  // Step 2: Final Status Update
-  setTimeout(() => {
-    balance -= amt;
+    // Paisa kaatna
+    balance -= currentAmt;
     localStorage.setItem("balance", balance);
-    document.getElementById("bal").innerText = balance;
 
-    // Save used level for ₹10-₹100
-    if(amt <= 100 && !usedLevels.includes(amt)){
-      usedLevels.push(amt);
-      localStorage.setItem("usedLevels", JSON.stringify(usedLevels));
+    // Level lock karna (₹10 se ₹100 tak)
+    if(currentAmt <= 100) {
+      used.push(currentAmt);
+      localStorage.setItem("usedLevels", JSON.stringify(used));
     }
 
-    showStatus("✅ Success! ₹" + amt + " Sent","success");
-    renderWithdraw();
-  }, 4500);
-}
+    stat.innerText = "✅ Success! Sent to UPI";
+    stat.style.color = "green";
 
-function showStatus(msg, type){
-  const pop = document.getElementById("statusPopup");
-  const txt = document.getElementById("statusText");
-  const lod = document.getElementById("loader");
-
-  pop.style.display = "flex";
-  txt.innerText = msg;
-  txt.className = type;
-  lod.style.display = (type === "pending") ? "block" : "none";
-
-  if(type !== "pending"){
     setTimeout(() => {
-      pop.style.display = "none";
-    }, 2500);
-  }
+      closePop();
+      updateDisplay();
+    }, 2000);
+  }, 3000);
 }
 
-renderWithdraw();
+updateDisplay();
 </script>
 
 </body>

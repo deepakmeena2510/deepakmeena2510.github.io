@@ -1,149 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Wallet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family: Arial, sans-serif;
-}
-body{
-  background:#f2f3f7;
-}
-.app{
-  min-height:100vh;
-}
-.topbar{
-  background:#27ae60;
-  color:#fff;
-  padding:18px;
-  text-align:center;
-  font-size:20px;
-  font-weight:bold;
-}
-.container{
-  padding:15px;
-}
-.balance-card{
-  background:#fff;
-  border-radius:12px;
-  padding:20px;
-  text-align:center;
-  margin-bottom:15px;
-}
-.balance-card h1{
-  margin-top:10px;
-  color:#27ae60;
-}
-.card{
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:15px;
-}
-.input{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-size:16px;
-}
-.amount-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-bottom:20px;
-}
-.amount-grid button{
-  padding:12px;
-  border:none;
-  background:#eaeaea;
-  border-radius:8px;
-  font-size:16px;
-}
-.amount-grid button.active{
-  background:#27ae60;
-  color:white;
-}
-.withdraw-btn{
-  width:100%;
-  padding:15px;
-  background:#27ae60;
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  font-size:18px;
-}
-</style>
 </head>
 
-<body class="app">
+<body>
 
-<div class="topbar">💰 Wallet</div>
+<h2>Wallet</h2>
 
-<div class="container">
+<p>Balance: ₹<span id="bal">0</span></p>
 
-  <div class="balance-card">
-    <p>Available Balance</p>
-    <h1>₹ <span id="bal">0</span></h1>
-  </div>
+<input placeholder="Enter UPI ID">
+<br><br>
 
-  <div class="card">
-    <input id="upi" type="text" placeholder="Enter UPI ID" class="input">
-  </div>
+<button onclick="withdraw()">Withdraw</button>
+<br><br>
 
-  <div class="amount-grid">
-    <button onclick="selectAmount(this,10)">₹10</button>
-    <button onclick="selectAmount(this,50)">₹50</button>
-    <button onclick="selectAmount(this,100)">₹100</button>
-    <button onclick="selectAmount(this,200)">₹200</button>
-    <button onclick="selectAmount(this,300)">₹300</button>
-    <button onclick="selectAmount(this,500)">₹500</button>
-  </div>
-
-  <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
-
-</div>
+<button onclick="back()">⬅ Back</button>
 
 <script>
-let balance = Number(localStorage.getItem("balance")) || 0;
-let selectedAmount = 0;
-
-document.getElementById("bal").innerText = balance;
-
-function selectAmount(btn, amount){
-  selectedAmount = amount;
-  document.querySelectorAll(".amount-grid button")
-    .forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-}
+document.getElementById("bal").innerText =
+  localStorage.getItem("balance") || 0;
 
 function withdraw(){
-  let upi = document.getElementById("upi").value.trim();
+  alert("Withdraw request sent (Demo)");
+}
 
-  if(!upi){
-    alert("❌ UPI ID daale");
-    return;
-  }
-  if(selectedAmount == 0){
-    alert("❌ Withdraw amount select kare");
-    return;
-  }
-  if(balance < selectedAmount){
-    alert("❌ Balance kam hai");
-    return;
-  }
-
-  balance -= selectedAmount;
-  localStorage.setItem("balance", balance);
-  document.getElementById("bal").innerText = balance;
-
-  alert("✅ Withdraw request sent to admin (Demo)");
+function back(){
+  history.back();   // 🔥 REAL BACK
 }
 </script>
 

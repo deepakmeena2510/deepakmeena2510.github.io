@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="css/style.css">
 
 <style>
-/* Balance Box (नया जोड़ा गया) */
+/* Balance Box */
 .balance-box{
   margin:15px;
   background:#ffffff;
@@ -29,20 +29,21 @@
 
 <body class="app">
 
-<!-- Top Bar (जैसा था वैसा ही) -->
+<!-- Top Bar -->
 <div class="topbar">Earning App</div>
 
-<!-- ✅ Balance Box (सिर्फ यही नया जोड़ा गया) -->
+<!-- Balance -->
 <div class="balance-box">
   <h2>💰 Balance</h2>
   <div class="amt">₹ <span id="bal">0</span></div>
 </div>
 
-<!-- Buttons (बिल्कुल पहले जैसे) -->
+<!-- Buttons -->
 <div class="container grid">
   <button class="btn" onclick="go('spin.html')">🎡 Spin</button>
   <button class="btn" onclick="go('captcha.html')">🧩 Captcha</button>
   <button class="btn" onclick="go('wallet.html')">💰 Wallet</button>
+  <button class="btn" onclick="go('referral.html')">👥 Referral</button>
   <button class="btn" onclick="go('settings.html')">⚙️ Settings</button>
 </div>
 
@@ -51,7 +52,7 @@ function go(p){
   window.location = p;
 }
 
-/* Balance दिखाने का code */
+/* Balance show */
 document.getElementById("bal").innerText =
   localStorage.getItem("balance") || 0;
 </script>

@@ -3,53 +3,91 @@
 <head>
 <title>Wallet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial;
-  background:#f2f2f2;
+  font-family: "Segoe UI", sans-serif;
+  background:#f4f6f8;
 }
-.topbar{
-  background:#000;
+
+/* Header */
+.header{
+  background:linear-gradient(135deg,#1abc9c,#16a085);
   color:#fff;
-  padding:14px;
+  padding:22px;
   text-align:center;
-  font-size:18px;
+  font-size:20px;
+  font-weight:600;
 }
-.balance-card{
+
+/* Balance */
+.balance-box{
   background:#fff;
-  margin:12px;
-  padding:15px;
-  border-radius:12px;
-  font-size:18px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  margin:16px;
+  padding:18px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 6px 15px rgba(0,0,0,.08);
 }
+.balance-icon{
+  font-size:26px;
+}
+.balance-text{
+  font-size:16px;
+  color:#777;
+}
+.balance-amount{
+  font-size:22px;
+  font-weight:700;
+  margin-top:4px;
+}
+
+/* Withdraw cards */
 .list{
-  margin:10px;
+  padding:10px 14px 30px;
 }
-.item{
+.card{
   background:#fff;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:10px;
+  padding:16px;
+  border-radius:18px;
+  margin-bottom:14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 2px 5px rgba(0,0,0,.08);
+  box-shadow:0 4px 12px rgba(0,0,0,.07);
 }
-.item span{
-  font-size:16px;
-  font-weight:bold;
+.left{
+  display:flex;
+  flex-direction:column;
 }
-button{
-  padding:8px 14px;
+.title{
+  font-size:15px;
+  color:#555;
+}
+.amount{
+  font-size:20px;
+  font-weight:700;
+  color:#000;
+}
+
+/* Button */
+.btn{
+  padding:10px 18px;
   border:none;
-  border-radius:6px;
-  background:#2ecc71;
+  border-radius:25px;
+  background:linear-gradient(135deg,#2ecc71,#27ae60);
   color:#fff;
   font-size:14px;
+  font-weight:600;
 }
-button:disabled{
+.btn:active{
+  transform:scale(.96);
+}
+.btn.disabled{
   background:#ccc;
 }
 </style>
@@ -57,10 +95,14 @@ button:disabled{
 
 <body>
 
-<div class="topbar">Wallet</div>
+<div class="header">💼 Wallet</div>
 
-<div class="balance-card">
-  💰 Balance: ₹ <span id="bal">0</span>
+<div class="balance-box">
+  <div class="balance-icon">💰</div>
+  <div>
+    <div class="balance-text">Available Balance</div>
+    <div class="balance-amount">₹ <span id="bal">0</span></div>
+  </div>
 </div>
 
 <div class="list" id="withdrawList"></div>
@@ -86,13 +128,25 @@ function render(){
   levels.forEach(l=>{
     if(l.once && used.includes(l.amt)) return;
 
-    let div = document.createElement("div");
-    div.className = "item";
+    let card = document.createElement("div");
+    card.className = "card";
 
-    let text = document.createElement("span");
-    text.innerText = "Withdraw ₹" + l.amt;
+    let left = document.createElement("div");
+    left.className = "left";
+
+    let t = document.createElement("div");
+    t.className = "title";
+    t.innerText = "Withdraw Amount";
+
+    let a = document.createElement("div");
+    a.className = "amount";
+    a.innerText = "₹" + l.amt;
+
+    left.appendChild(t);
+    left.appendChild(a);
 
     let btn = document.createElement("button");
+    btn.className = "btn";
     btn.innerText = "Apply";
 
     btn.onclick = ()=>{
@@ -108,13 +162,14 @@ function render(){
         used.push(l.amt);
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
-      alert("✅ Withdraw ₹"+l.amt+" request भेज दी गई");
+
+      alert("✅ Withdraw ₹"+l.amt+" request sent");
       render();
     };
 
-    div.appendChild(text);
-    div.appendChild(btn);
-    list.appendChild(div);
+    card.appendChild(left);
+    card.appendChild(btn);
+    list.appendChild(card);
   });
 }
 render();

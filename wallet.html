@@ -2,14 +2,56 @@
 <html>
 <head>
 <title>Wallet</title>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Arial;background:#f2f2f2;margin:0}
-.topbar{background:#000;color:#fff;padding:15px;text-align:center}
-.box{background:#fff;margin:15px;padding:15px;border-radius:10px}
-button{width:100%;padding:12px;margin-top:10px;font-size:16px;
-border:none;border-radius:8px;background:#2ecc71;color:#fff}
-button:disabled{background:#ccc}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+}
+.topbar{
+  background:#000;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-size:18px;
+}
+.balance-card{
+  background:#fff;
+  margin:12px;
+  padding:15px;
+  border-radius:12px;
+  font-size:18px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.list{
+  margin:10px;
+}
+.item{
+  background:#fff;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 5px rgba(0,0,0,.08);
+}
+.item span{
+  font-size:16px;
+  font-weight:bold;
+}
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  background:#2ecc71;
+  color:#fff;
+  font-size:14px;
+}
+button:disabled{
+  background:#ccc;
+}
 </style>
 </head>
 
@@ -17,18 +59,16 @@ button:disabled{background:#ccc}
 
 <div class="topbar">Wallet</div>
 
-<div class="box">
+<div class="balance-card">
   💰 Balance: ₹ <span id="bal">0</span>
 </div>
 
-<div id="withdrawList"></div>
+<div class="list" id="withdrawList"></div>
 
 <script>
-// ===== BALANCE =====
 let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// ===== WITHDRAW LEVELS =====
 let levels = [
   {amt:10, once:true},
   {amt:30, once:true},
@@ -38,29 +78,28 @@ let levels = [
   {amt:500, once:false}
 ];
 
-// already used (10,30,50,100)
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
-
 let list = document.getElementById("withdrawList");
 
 function render(){
   list.innerHTML = "";
-
   levels.forEach(l=>{
     if(l.once && used.includes(l.amt)) return;
 
     let div = document.createElement("div");
-    div.className = "box";
+    div.className = "item";
+
+    let text = document.createElement("span");
+    text.innerText = "Withdraw ₹" + l.amt;
 
     let btn = document.createElement("button");
-    btn.innerText = "Withdraw ₹" + l.amt;
+    btn.innerText = "Apply";
 
     btn.onclick = ()=>{
       if(balance < l.amt){
         alert("❌ Balance कम है");
         return;
       }
-
       balance -= l.amt;
       localStorage.setItem("balance", balance);
       document.getElementById("bal").innerText = balance;
@@ -69,16 +108,15 @@ function render(){
         used.push(l.amt);
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
-
-      alert("✅ ₹"+l.amt+" Withdraw Request भेज दी गई");
+      alert("✅ Withdraw ₹"+l.amt+" request भेज दी गई");
       render();
     };
 
+    div.appendChild(text);
     div.appendChild(btn);
     list.appendChild(div);
   });
 }
-
 render();
 </script>
 

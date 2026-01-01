@@ -1,52 +1,46 @@
-*{
-  box-sizing:border-box;
-  font-family: Arial, sans-serif;
+:root {
+    --primary: #2ecc71;
+    --dark: #2c3e50;
+    --light: #f4f7f6;
 }
 
-body{
-  margin:0;
-  padding:15px;
-  background:#f2f2f2;
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; background-color: var(--light);
 }
 
-.header{
-  background:#ffffff;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+.app-container {
+    max-width: 450px; margin: auto; height: 100vh;
+    display: flex; flex-direction: column; background: white;
 }
 
-.balance{
-  font-size:20px;
-  font-weight:bold;
+.header {
+    background: var(--primary); color: white;
+    padding: 20px; text-align: center; border-radius: 0 0 20px 20px;
 }
 
-.btn{
-  display:block;
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  background:#4CAF50;
-  color:white;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
+.balance-card {
+    background: var(--dark); color: white; margin: -20px 20px 20px;
+    padding: 20px; border-radius: 15px; text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.btn.blue{background:#2196F3;}
+.task-list { padding: 20px; flex-grow: 1; overflow-y: auto; }
 
-.card{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:12px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+.task-item {
+    background: #fff; padding: 15px; margin-bottom: 10px;
+    border-radius: 10px; display: flex; justify-content: space-between;
+    align-items: center; border: 1px solid #eee;
 }
 
-.card a{
-  text-decoration:none;
-  color:black;
-  font-size:17px;
-  display:block;
+.btn-claim {
+    background: var(--primary); color: white; border: none;
+    padding: 8px 15px; border-radius: 5px; cursor: pointer;
 }
+
+.nav-bar {
+    display: flex; justify-content: space-around;
+    padding: 15px; border-top: 1px solid #eee; background: white;
+}
+
+.nav-item { text-decoration: none; color: #888; font-size: 12px; text-align: center; }

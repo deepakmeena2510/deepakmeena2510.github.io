@@ -9,6 +9,16 @@ body{margin:0;font-family:sans-serif;background:#f4f6f8}
 .box{background:#fff;margin:15px;padding:16px;border-radius:14px;box-shadow:0 5px 12px rgba(0,0,0,.1)}
 .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .btn{padding:8px 16px;border:none;border-radius:20px;background:#2ecc71;color:#fff}
+.history-btn{
+  width:calc(100% - 30px);
+  margin:0 15px 10px;
+  padding:12px;
+  border:none;
+  border-radius:25px;
+  background:#3498db;
+  color:#fff;
+  font-size:16px
+}
 .popup,.loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 .card{background:#fff;padding:20px;border-radius:14px;width:85%}
 input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #ccc}
@@ -21,6 +31,11 @@ input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid 
 <body>
 
 <div class="header">💼 Wallet</div>
+
+<!-- HISTORY BUTTON -->
+<button class="history-btn" onclick="location.href='withdraw-history.html'">
+📜 Withdraw History
+</button>
 
 <div class="box">
 <b>Available Balance:</b> ₹ <span id="bal">0</span>
@@ -77,7 +92,7 @@ function render(){
     r.querySelector("button").onclick=()=>{
       if(balance<w.amt){alert("Balance कम है");return;}
       withdrawAmt=w.amt;
-      document.getElementById("popup").style.display="flex";
+      popup.style.display="flex";
     };
     list.appendChild(r);
   });

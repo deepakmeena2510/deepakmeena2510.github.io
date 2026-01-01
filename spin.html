@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Spin</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="app">
+<div class="topbar">Spin & Earn</div>
+
+<div class="container">
+  <div class="card">
+    <h2 id="result">Spin Now</h2><br>
+    <button class="btn" onclick="spin()">SPIN</button>
+  </div>
+</div>
+
+<script>
+let spins = localStorage.getItem("spins") || 0;
+
+function spin(){
+  if(spins >= 3){
+    alert("Daily limit reached");
+    return;
+  }
+
+  let rewards=[1,2,3];
+  let win = rewards[Math.floor(Math.random()*3)];
+
+  let bal = Number(localStorage.getItem("balance")||0);
+  bal += win;
+
+  localStorage.setItem("balance",bal);
+  spins++;
+  localStorage.setItem("spins",spins);
+
+  document.getElementById("result").innerText="₹"+win+" Added";
+}
+</script>
+</body>
+</html>

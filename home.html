@@ -1,37 +1,30 @@
-<div class="app-container">
-    <div class="header">
-        <h3>CashMaster Pro</h3>
-    </div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Home</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-    <div class="balance-card">
-        <p>Your Earnings</p>
-        <h1 id="balance">₹0.00</h1>
-    </div>
+<h2>💰 Balance: ₹ <span id="bal">0</span></h2>
 
-    <div class="task-list">
-        <h4>Daily Tasks</h4>
-        <div class="task-item">
-            <div>
-                <strong>Watch Video Ads</strong><br>
-                <small>Earn ₹2.00</small>
-            </div>
-            <button class="btn-claim" onclick="completeTask(2)">Start</button>
-        </div>
-        
-        <div class="task-item">
-            <div>
-                <strong>Spin & Win</strong><br>
-                <small>Earn up to ₹5.00</small>
-            </div>
-            <button class="btn-claim" onclick="window.location.href='level.html'">Play</button>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <a href="home.html" class="nav-item">🏠<br>Home</a>
-        <a href="refer.html" class="nav-item">👥<br>Refer</a>
-        <a href="Withdraw.html" class="nav-item">💰<br>Withdraw</a>
-        <a href="login.html" class="nav-item">👤<br>Profile</a>
-    </nav>
+<div class="menu">
+  <button onclick="addCoin()">🎡 Spin (+₹2)</button>
+  <button onclick="addCoin()">🎟 Scratch (+₹3)</button>
+  <button onclick="location.href='wallet.html'">💸 Withdraw</button>
 </div>
-<script src="app.js"></script>
+
+<script>
+let bal = Number(localStorage.getItem("balance"));
+document.getElementById("bal").innerText = bal;
+
+function addCoin(){
+  bal += Math.floor(Math.random()*3)+1;
+  localStorage.setItem("balance",bal);
+  document.getElementById("bal").innerText = bal;
+}
+</script>
+
+</body>
+</html>

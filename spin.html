@@ -1,42 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Spin</title>
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Spin & Earn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+  text-align:center;
+}
+.header{
+  background:#2ecc71;
+  color:white;
+  padding:15px;
+  font-size:20px;
+  font-weight:bold;
+}
+.wheel-box{
+  margin:30px auto;
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  border:8px solid #2ecc71;
+  background:conic-gradient(
+    #27ae60 0deg 120deg,
+    #f1c40f 120deg 240deg,
+    #e67e22 240deg 360deg
+  );
+  transition:transform 4s ease-out;
+  position:relative;
+}
+.wheel-box span{
+  position:absolute;
+  font-size:22px;
+  font-weight:bold;
+  color:white;
+}
+.r1{top:40px; left:100px;}
+.r2{bottom:50px; left:40px;}
+.r3{bottom:50px; right:40px;}
+
+.pointer{
+  width:0;
+  height:0;
+  border-left:12px solid transparent;
+  border-right:12px solid transparent;
+  border-bottom:25px solid red;
+  margin:-10px auto 0;
+}
+
+.btn{
+  background:#2ecc71;
+  color:white;
+  border:none;
+  padding:15px;
+  width:80%;
+  font-size:18px;
+  border-radius:10px;
+  margin-top:20px;
+}
+.result{
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+}
+.spin-left{
+  margin-top:10px;
+  font-size:16px;
+}
+</style>
 </head>
 
-<body class="app">
-<div class="topbar">Spin & Earn</div>
+<body>
 
-<div class="container">
-  <div class="card">
-    <h2 id="result">Spin Now</h2><br>
-    <button class="btn" onclick="spin()">SPIN</button>
-  </div>
+<div class="header">🎡 Spin & Earn</div>
+
+<div class="pointer"></div>
+<div id="wheel" class="wheel-box">
+  <span class="r1">₹1</span>
+  <span class="r2">₹2</span>
+  <span class="r3">₹3</span>
 </div>
 
+<div class="spin-left">
+  Today Spins Left: <b id="spinLeft">3</b>
+</div>
+
+<button class="btn" onclick="spin()">SPIN</button>
+<div class="result" id="result"></div>
+
 <script>
-let spins = localStorage.getItem("spins") || 0;
+let today = new Date().toDateString();
+
+if(localStorage.getItem("spinDate") !== today){
+  localStorage.setItem("spinDate", today);
+  localStorage.setItem("spinCount", 0);
+}
+
+let spinCount = parseInt(localStorage.getItem("spinCount") || 0);
+updateSpinLeft();
+
+function updateSpinLeft(){
+  document.getElementById("spinLeft").innerText = 3 - spinCount;
+}
 
 function spin(){
-  if(spins >= 3){
-    alert("Daily limit reached");
+  if(spinCount >= 3){
+    document.getElementById("result").innerText =
+      "❌ Aaj ke Spin khatam ho gaye";
     return;
   }
 
-  let rewards=[1,2,3];
-  let win = rewards[Math.floor(Math.random()*3)];
+  spinCount++;
+  localStorage.setItem("spinCount", spinCount);
+  updateSpinLeft();
 
-  let bal = Number(localStorage.getItem("balance")||0);
-  bal += win;
+  let rewardList = [1,2,3];
+  let reward = rewardList[Math.floor(Math.random()*3)];
 
-  localStorage.setItem("balance",bal);
-  spins++;
-  localStorage.setItem("spins",spins);
+  let rotation = 360*5 + Math.floor(Math.random()*360);
+  document.getElementById("wheel").style.transform =
+    "rotate(" + rotation + "deg)";
 
-  document.getElementById("result").innerText="₹"+win+" Added";
+  setTimeout(()=>{
+    let bal = parseInt(localStorage.getItem("balance") || 0);
+    bal += reward;
+    localStorage.setItem("balance", bal);
+
+    document.getElementById("result").innerText =
+      "🎉 Aapne ₹" + reward + " jeete";
+  },4000);
 }
 </script>
+
 </body>
-</html>
+ript>
+

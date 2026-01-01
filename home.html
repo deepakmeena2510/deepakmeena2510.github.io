@@ -4,11 +4,41 @@
 <title>Home</title>
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* Balance Box (नया जोड़ा गया) */
+.balance-box{
+  margin:15px;
+  background:#ffffff;
+  border-radius:15px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+.balance-box h2{
+  margin:0;
+  font-size:18px;
+}
+.balance-box .amt{
+  font-size:36px;
+  font-weight:bold;
+  margin-top:8px;
+}
+</style>
 </head>
 
 <body class="app">
+
+<!-- Top Bar (जैसा था वैसा ही) -->
 <div class="topbar">Earning App</div>
 
+<!-- ✅ Balance Box (सिर्फ यही नया जोड़ा गया) -->
+<div class="balance-box">
+  <h2>💰 Balance</h2>
+  <div class="amt">₹ <span id="bal">0</span></div>
+</div>
+
+<!-- Buttons (बिल्कुल पहले जैसे) -->
 <div class="container grid">
   <button class="btn" onclick="go('spin.html')">🎡 Spin</button>
   <button class="btn" onclick="go('captcha.html')">🧩 Captcha</button>
@@ -17,7 +47,14 @@
 </div>
 
 <script>
-function go(p){ window.location=p; }
+function go(p){
+  window.location = p;
+}
+
+/* Balance दिखाने का code */
+document.getElementById("bal").innerText =
+  localStorage.getItem("balance") || 0;
 </script>
+
 </body>
 </html>

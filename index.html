@@ -1,22 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>All-In-One Earning App</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Daily Tasks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial, sans-serif;
+}
+
+body{
+  background:#f2f2f2;
+  height:100vh;
+}
+
+.app{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  background:#27ae60;
+  color:#fff;
+  padding:18px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.container{
+  flex:1;
+  padding:20px;
+}
+
+.balance-card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  margin-bottom:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.task-card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+button{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:10px;
+  background:#27ae60;
+  color:white;
+  font-size:16px;
+}
+
+.footer{
+  padding:15px;
+  background:white;
+  border-top:1px solid #ddd;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Welcome to All-In-One Earning App</h2>
+<div class="app">
 
-<button onclick="goLogin()">Login</button>
-<button onclick="goSignup()">Sign Up</button>
+  <div class="topbar">
+    📋 Daily Tasks
+  </div>
+
+  <div class="container">
+
+    <div class="balance-card">
+      <p>Your Balance</p>
+      <h1>₹ <span id="bal">0</span></h1>
+    </div>
+
+    <div class="task-card">
+      <h3>Task 1</h3><br>
+      <button onclick="earn(2)">Click & Earn ₹2</button>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <button onclick="location.href='wallet.html'">Go to Wallet</button>
+  </div>
+
+</div>
 
 <script>
-function goLogin(){
-  window.location.href = "login.html";
-}
-function goSignup(){
-  window.location.href = "signup.html";
+let balance = localStorage.getItem("balance") || 0;
+document.getElementById("bal").innerText = balance;
+
+function earn(amount){
+  balance = Number(balance) + amount;
+  localStorage.setItem("balance", balance);
+  document.getElementById("bal").innerText = balance;
+  alert("₹"+amount+" Added");
 }
 </script>
 

@@ -1,4 +1,5 @@
 <script>
+// INITIAL DATA
 if(!localStorage.getItem("balance")){
   localStorage.setItem("balance",500);
 }
@@ -8,83 +9,82 @@ bal.innerText = balance;
 
 let history = JSON.parse(localStorage.getItem("history") || "[]");
 let withdrawAmount = 0;
+let isProcessing = false;
 
+// WITHDRAW OPTIONS
 let amounts = [10,30,50,100,200,500];
 let list = document.getElementById("withdrawList");
 
 function renderWithdraw(){
   list.innerHTML="";
   amounts.forEach(a=>{
-    let d=document.createElement("div");
-    d.className="row";
-    d.innerHTML=`₹ ${a} <button class="btn">Withdraw</button>`;
-    d.querySelector("button").onclick=()=>{
+    let div=document.createElement("div");
+    div.className="row";
+    div.innerHTML=`<span>₹ ${a}</span><button class="btn">Withdraw</button>`;
+    div.querySelector("button").onclick=()=>{
+      if(isProcessing) return;
       if(balance<a){
-        openStatus("❌ Balance कम है",false);
+        showStatus("❌ Balance कम है","fail");
         return;
       }
       withdrawAmount=a;
       payPopup.style.display="flex";
     };
-    list.appendChild(d);
+    list.appendChild(div);
   });
 }
 renderWithdraw();
 
+// CONFIRM WITHDRAW
 function confirmWithdraw(){
+  if(isProcessing) return;
+
   let m=method.value;
   let n=name.value.trim();
   let u=upi.value.trim();
 
   if(!m||!n||!u){
-    openStatus("❌ Details भरें",false);
+    showStatus("❌ All details required","fail");
     return;
   }
   if(!u.includes("@")){
-    openStatus("❌ Invalid UPI",false);
+    showStatus("❌ Invalid UPI ID","fail");
     return;
   }
 
+  isProcessing = true;
   payPopup.style.display="none";
 
-  // STEP 1 : PENDING
+  // STEP 1: PENDING
   statusPopup.style.display="flex";
   loader.style.display="block";
-  statusText.innerText="⏳ Processing...";
+  statusText.className="pending";
+  statusText.innerText="⏳ Pending...";
 
+  // STEP 2: SUCCESS AFTER DELAY
   setTimeout(()=>{
-    statusText.innerText="🔔 Pending";
+    balance -= withdrawAmount;
+    localStorage.setItem("balance",balance);
+    bal.innerText = balance;
 
-    // STEP 2 : SUCCESS
+    history.unshift({
+      amount:withdrawAmount,
+      method:m,
+      status:"Success",
+      time:new Date().toLocaleString()
+    });
+    localStorage.setItem("history",JSON.stringify(history));
+
+    loader.style.display="none";
+    statusText.className="success";
+    statusText.innerText="✅ Withdraw Successful";
+
     setTimeout(()=>{
-      loader.style.display="none";
-      statusText.innerText="✅ Withdraw Successful";
-
-      balance -= withdrawAmount;
-      localStorage.setItem("balance",balance);
-      bal.innerText = balance;
-
-      history.unshift({
-        amount:withdrawAmount,
-        method:m,
-        status:"Success",
-        time:new Date().toLocaleString()
-      });
-      localStorage.setItem("history",JSON.stringify(history));
-
-      setTimeout(()=>{
-        statusPopup.style.display="none";
-      },2000);
-
+      statusPopup.style.display="none";
+      isProcessing = false;
+      renderWithdraw();
     },2000);
 
-  },1000);
-}
-
-function openStatus(msg,success){
-  statusPopup.style.display="flex";
-  loader.style.display="none";
-  statusText.innerText=msg;
-  setTimeout(()=>statusPopup.style.display="none",2000);
+  },3000);
 }
 </script>

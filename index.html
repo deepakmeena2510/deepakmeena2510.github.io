@@ -11,7 +11,17 @@ input,button{width:100%;padding:10px;margin:5px 0;}
 button{background:green;color:#fff;border:none;}
 </style>
 </head>
+<button onclick="earn()">Click & Earn ₹2</button>
 
+<script>
+let balance = localStorage.getItem("bal") || 0;
+
+function earn(){
+  balance = Number(balance) + 2;
+  localStorage.setItem("bal", balance);
+  alert("₹2 added. Balance: ₹" + balance);
+}
+</script>
 <body>
 <div class="box">
 <h2>Login</h2>

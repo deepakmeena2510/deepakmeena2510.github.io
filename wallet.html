@@ -1,0 +1,15 @@
+<h2>Wallet</h2>
+
+<p>Your Balance: ₹<span id="bal"></span></p>
+
+<input placeholder="UPI ID"><br><br>
+<button onclick="withdraw()">Withdraw Request</button>
+
+<script>
+document.getElementById("bal").innerText =
+  localStorage.getItem("balance");
+
+function withdraw(){
+  alert("Withdraw request sent to admin (Demo)");
+}
+</script>

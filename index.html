@@ -14,8 +14,7 @@
 }
 
 body{
-  background:#f2f2f2;
-  height:100vh;
+  background:#f4f6fb;
 }
 
 .app{
@@ -24,51 +23,104 @@ body{
   flex-direction:column;
 }
 
+/* Top Bar */
 .topbar{
-  background:#27ae60;
+  background:linear-gradient(135deg,#6a11cb,#2575fc);
   color:#fff;
-  padding:18px;
+  padding:20px;
   text-align:center;
-  font-size:20px;
+  font-size:22px;
   font-weight:bold;
 }
 
-.container{
-  flex:1;
-  padding:20px;
-}
-
+/* Balance Card */
 .balance-card{
-  background:white;
+  background:#fff;
+  margin:15px;
   padding:20px;
-  border-radius:12px;
+  border-radius:15px;
   text-align:center;
-  margin-bottom:20px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
-.task-card{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:15px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+.balance-card p{
+  color:#777;
 }
 
-button{
-  width:100%;
+.balance-card h1{
+  margin-top:10px;
+  font-size:32px;
+  color:#27ae60;
+}
+
+/* Task Card */
+.task{
+  background:#fff;
+  margin:15px;
   padding:15px;
-  border:none;
-  border-radius:10px;
-  background:#27ae60;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.task-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.icon{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:#2575fc;
   color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.task h3{
   font-size:16px;
 }
 
-.footer{
+.task button{
+  background:#27ae60;
+  color:white;
+  border:none;
+  padding:10px 15px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+/* Wallet Button */
+.wallet-btn{
+  margin:20px;
+  background:#000;
+  color:#fff;
+  border:none;
   padding:15px;
-  background:white;
-  border-top:1px solid #ddd;
+  border-radius:15px;
+  font-size:16px;
+}
+
+/* Spinner */
+.spinner{
+  display:none;
+  margin:20px auto;
+  width:40px;
+  height:40px;
+  border:4px solid #ddd;
+  border-top:4px solid #2575fc;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  100%{transform:rotate(360deg);}
 }
 </style>
 </head>
@@ -77,27 +129,42 @@ button{
 
 <div class="app">
 
-  <div class="topbar">
-    📋 Daily Tasks
+  <div class="topbar">Daily Tasks</div>
+
+  <div class="balance-card">
+    <p>Your Balance</p>
+    <h1>₹ <span id="bal">0</span></h1>
   </div>
 
-  <div class="container">
-
-    <div class="balance-card">
-      <p>Your Balance</p>
-      <h1>₹ <span id="bal">0</span></h1>
+  <!-- Task 1 -->
+  <div class="task">
+    <div class="task-left">
+      <div class="icon">📸</div>
+      <div>
+        <h3>Capture Task</h3>
+        <small>Earn ₹2</small>
+      </div>
     </div>
+    <button onclick="earn(2)">Start</button>
+  </div>
 
-    <div class="task-card">
-      <h3>Task 1</h3><br>
-      <button onclick="earn(2)">Click & Earn ₹2</button>
+  <!-- Task 2 -->
+  <div class="task">
+    <div class="task-left">
+      <div class="icon">🎯</div>
+      <div>
+        <h3>Simple Task</h3>
+        <small>Earn ₹5</small>
+      </div>
     </div>
-
+    <button onclick="earn(5)">Start</button>
   </div>
 
-  <div class="footer">
-    <button onclick="location.href='wallet.html'">Go to Wallet</button>
-  </div>
+  <div class="spinner" id="loader"></div>
+
+  <button class="wallet-btn" onclick="location.href='wallet.html'">
+    Go to Wallet
+  </button>
 
 </div>
 
@@ -106,10 +173,15 @@ let balance = localStorage.getItem("balance") || 0;
 document.getElementById("bal").innerText = balance;
 
 function earn(amount){
-  balance = Number(balance) + amount;
-  localStorage.setItem("balance", balance);
-  document.getElementById("bal").innerText = balance;
-  alert("₹"+amount+" Added");
+  document.getElementById("loader").style.display="block";
+
+  setTimeout(()=>{
+    balance = Number(balance) + amount;
+    localStorage.setItem("balance", balance);
+    document.getElementById("bal").innerText = balance;
+    document.getElementById("loader").style.display="none";
+    alert("₹"+amount+" Earned!");
+  },1500);
 }
 </script>
 

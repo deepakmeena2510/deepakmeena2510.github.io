@@ -1,207 +1,91 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Withdrawal System</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-:root {
-  --primary: #c0392b; /* Petrol pump jaisa red/dark theme */
-  --bg: #f2f2f2;
-}
-
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header {
-  background: #2c3e50;
-  color: white;
-  width: 100%;
-  padding: 20px 0;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.balance-section {
-  background: white;
-  width: 90%;
-  margin: 20px 0;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-#bal {
-  font-size: 30px;
-  color: #27ae60;
-  font-weight: bold;
-}
-
-.withdraw-container {
-  width: 90%;
-}
-
-.withdraw-card {
-  background: white;
-  margin-bottom: 15px;
-  padding: 15px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 5px solid var(--primary);
-}
-
-.amount { font-size: 20px; font-weight: bold; }
-
-.btn-draw {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Popup */
-.popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  width: 80%;
-  text-align: center;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-.status { font-weight: bold; margin-top: 10px; }
-</style>
+<title>Wallet</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<div class="header">Withdrawal Center</div>
+<h2>Wallet</h2>
+<p>Balance: ₹ <span id="bal">0</span></p>
 
-<div class="balance-section">
-  <p style="margin:0; color:#666;">Aapka Balance</p>
-  ₹ <span id="bal">0</span>
-</div>
+<div id="list"></div>
 
-<div class="withdraw-container" id="list">
-  </div>
+<h3>Withdraw</h3>
+<input id="amount" placeholder="Enter Amount ₹">
+<input id="upi" placeholder="Enter UPI ID">
 
-<div class="popup" id="pop">
-  <div class="modal">
-    <h3 id="popTitle">Withdraw ₹10</h3>
-    <input type="text" id="upi" placeholder="Enter UPI ID">
-    <button class="btn-draw" style="width:100%" onclick="finalSubmit()">Confirm Transfer</button>
-    <p style="color:red; cursor:pointer;" onclick="closePop()">Cancel</p>
-    <div id="stat" class="status"></div>
-  </div>
-</div>
+<select id="method">
+  <option value="">Select Method</option>
+  <option>UPI</option>
+  <option>Paytm</option>
+  <option>PhonePe</option>
+  <option>Google Pay</option>
+</select>
+
+<button onclick="withdraw()">Withdraw</button>
+
+<p id="status"></p>
 
 <script>
-// Data aur Rules
-let balance = Number(localStorage.getItem("balance") || 500);
-let used = JSON.parse(localStorage.getItem("usedLevels") || "[]");
-let levels = [10, 30, 50, 100, 200, 300];
-let currentAmt = 0;
+let bal = Number(localStorage.getItem("balance"));
+let used = JSON.parse(localStorage.getItem("used")||"[]");
+document.getElementById("bal").innerText = bal;
 
-function updateDisplay() {
-  document.getElementById("bal").innerText = balance;
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+let amounts=[10,30,50,100,200,500];
+let list=document.getElementById("list");
 
-  levels.forEach(amt => {
-    // ₹10, 30, 50, 100 ek baar use hone par hat jayenge
-    if(amt <= 100 && used.includes(amt)) return;
-
-    let div = document.createElement("div");
-    div.className = "withdraw-card";
-    div.innerHTML = `
-      <div class="amount">₹${amt}</div>
-      <button class="btn-draw" onclick="openPop(${amt})">Withdraw</button>
-    `;
-    list.appendChild(div);
+function render(){
+  list.innerHTML="";
+  amounts.forEach(a=>{
+    if(a<=100 && used.includes(a)) return;
+    let b=document.createElement("button");
+    b.innerText="₹"+a;
+    b.onclick=()=>document.getElementById("amount").value=a;
+    list.appendChild(b);
   });
 }
+render();
 
-function openPop(amt) {
-  currentAmt = amt;
-  document.getElementById("popTitle").innerText = "Withdraw ₹" + amt;
-  document.getElementById("pop").style.display = "flex";
-  document.getElementById("stat").innerText = "";
-}
+function withdraw(){
+  let amt=Number(amount.value);
+  let upiId=upi.value;
+  let m=method.value;
 
-function closePop() {
-  document.getElementById("pop").style.display = "none";
-}
-
-function finalSubmit() {
-  let upiVal = document.getElementById("upi").value;
-  let stat = document.getElementById("stat");
-
-  if(!upiVal.includes("@")) {
-    alert("Sahi UPI ID daalein");
+  if(!amt||!upiId||!m){
+    status.innerText="❌ Details missing";
+    return;
+  }
+  if(!upiId.includes("@")){
+    status.innerText="❌ Invalid UPI";
+    return;
+  }
+  if(bal<amt){
+    status.innerText="❌ Balance low";
     return;
   }
 
-  if(balance < currentAmt) {
-    alert("Balance kam hai");
-    return;
-  }
+  status.innerText="⏳ Processing...";
+  setTimeout(()=>{
+    status.innerText="🔔 Pending";
+  },1000);
 
-  stat.innerText = "⏳ Processing...";
-  stat.style.color = "orange";
+  setTimeout(()=>{
+    bal-=amt;
+    localStorage.setItem("balance",bal);
+    balSpan=bal;
+    document.getElementById("bal").innerText=bal;
 
-  setTimeout(() => {
-    // Paisa kaatna
-    balance -= currentAmt;
-    localStorage.setItem("balance", balance);
-
-    // Level lock karna (₹10 se ₹100 tak)
-    if(currentAmt <= 100) {
-      used.push(currentAmt);
-      localStorage.setItem("usedLevels", JSON.stringify(used));
+    if(amt<=100 && !used.includes(amt)){
+      used.push(amt);
+      localStorage.setItem("used",JSON.stringify(used));
     }
 
-    stat.innerText = "✅ Success! Sent to UPI";
-    stat.style.color = "green";
-
-    setTimeout(() => {
-      closePop();
-      updateDisplay();
-    }, 2000);
-  }, 3000);
+    status.innerText="✅ Success";
+    render();
+  },3000);
 }
-
-updateDisplay();
 </script>
 
 </body>

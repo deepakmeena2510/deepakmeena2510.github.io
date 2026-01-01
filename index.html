@@ -10,7 +10,7 @@ body{
   margin:0;
   font-family:Arial, sans-serif;
   background:#f2f2f2;
-  padding-bottom:90px; /* bottom bar space */
+  padding-bottom:90px;
 }
 
 /* Balance Card */
@@ -58,7 +58,7 @@ body{
   margin-bottom:5px;
 }
 
-/* Bottom 3 Options */
+/* Bottom Options */
 .bottom-options{
   position:fixed;
   bottom:15px;
@@ -113,7 +113,7 @@ body{
   </div>
 </div>
 
-<!-- Bottom Options (Changed as per instruction) -->
+<!-- Bottom Options -->
 <div class="bottom-options">
   <div class="home-only" onclick="location.href='index.html'">
     🏠
@@ -128,9 +128,21 @@ body{
   </div>
 </div>
 
+<!-- ✅ FINAL BALANCE SCRIPT (AUTO UPDATE) -->
 <script>
-document.getElementById("bal").innerText =
-localStorage.getItem("balance") || 0;
+function loadBalance(){
+  let bal = localStorage.getItem("balance");
+  if(bal === null){
+    bal = 0;
+    localStorage.setItem("balance", 0);
+  }
+  document.getElementById("bal").innerText = bal;
+}
+
+loadBalance();
+
+/* Jab wallet se wapas aaye tab bhi update ho */
+window.addEventListener("focus", loadBalance);
 </script>
 
 </body>

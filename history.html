@@ -1,0 +1,8 @@
+<h2>Task History</h2>
+<div id="list"></div>
+
+<script>
+let h = JSON.parse(localStorage.getItem("history")) || [];
+document.getElementById("list").innerHTML =
+  h.map(x=>`${x.date} - ${x.task} ₹${x.amt} (${x.status})`).join("<br>");
+</script>

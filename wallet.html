@@ -1,66 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Wallet Withdraw</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{margin:0;font-family:Arial;background:#f2f2f2}
-.header{background:#16a085;color:#fff;padding:16px;text-align:center;font-size:20px}
-.box{background:#fff;margin:15px;padding:16px;border-radius:12px}
-.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.btn{background:#2ecc71;color:#fff;border:none;border-radius:20px;padding:8px 16px}
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;display:none;
-background:rgba(0,0,0,.6);align-items:center;justify-content:center}
-.card{background:#fff;width:85%;padding:20px;border-radius:14px;text-align:center}
-input,select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #ccc}
-.spinner{width:40px;height:40px;border:4px solid #ddd;border-top:4px solid #16a085;
-border-radius:50%;animation:spin 1s linear infinite;margin:auto}
-@keyframes spin{100%{transform:rotate(360deg)}}
-.success{color:green}
-.pending{color:orange}
-.fail{color:red}
-</style>
-</head>
-
-<body>
-
-<div class="header">💼 Wallet</div>
-
-<div class="box">
-<b>💰 Balance:</b> ₹ <span id="bal">0</span>
-</div>
-
-<div class="box" id="withdrawList"></div>
-
-<!-- Payment Popup -->
-<div class="popup" id="payPopup">
-  <div class="card">
-    <h3>Withdraw Details</h3>
-    <select id="method">
-      <option value="">Select Method</option>
-      <option>UPI</option>
-      <option>Paytm</option>
-      <option>PhonePe</option>
-      <option>Google Pay</option>
-    </select>
-    <input id="upi" placeholder="Enter UPI ID">
-    <br><br>
-    <button class="btn" onclick="confirmWithdraw()">Confirm</button>
-  </div>
-</div>
-
-<!-- Status Popup -->
-<div class="popup" id="statusPopup">
-  <div class="card">
-    <div id="loader" class="spinner"></div>
-    <p id="statusText"></p>
-  </div>
-</div>
-
 <script>
-// ===== INITIAL =====
+// ================= INITIAL SETUP =================
 if(!localStorage.getItem("balance")){
   localStorage.setItem("balance",500);
 }
@@ -68,97 +7,101 @@ let balance = Number(localStorage.getItem("balance"));
 bal.innerText = balance;
 
 let history = JSON.parse(localStorage.getItem("history") || "[]");
-let used = JSON.parse(localStorage.getItem("usedAmounts") || "[]");
+let usedLevels = JSON.parse(localStorage.getItem("usedLevels") || "[]");
 
-let withdrawAmount = 0;
 let amounts = [10,30,50,100,200,500];
+let withdrawAmount = 0;
+
 let list = document.getElementById("withdrawList");
 
-// ===== RENDER WITHDRAW =====
+// ================= RENDER AMOUNTS (NON CLICKABLE) =================
 function renderWithdraw(){
   list.innerHTML="";
-  amounts.forEach(a=>{
-    if(a<=100 && used.includes(a)) return;
 
-    let d=document.createElement("div");
-    d.className="row";
-    d.innerHTML=`<span>₹ ${a}</span><button class="btn">Withdraw</button>`;
-    d.querySelector("button").onclick=()=>{
-      if(balance<a){
-        showStatus("❌ Balance कम है","fail");
-        return;
-      }
-      withdrawAmount=a;
-      payPopup.style.display="flex";
+  amounts.forEach(a=>{
+    if(a <= 100 && usedLevels.includes(a)) return;
+
+    let div = document.createElement("div");
+    div.className = "row";
+    div.innerHTML = `
+      <span>₹ ${a}</span>
+      <button class="btn withdrawBtn">Withdraw</button>
+    `;
+
+    div.querySelector(".withdrawBtn").onclick = ()=>{
+      withdrawAmount = a;
+      document.getElementById("amountInput").value = a;
+      payPopup.style.display = "flex";
     };
-    list.appendChild(d);
+
+    list.appendChild(div);
   });
 }
 renderWithdraw();
 
-// ===== CONFIRM =====
+// ================= CONFIRM WITHDRAW =================
 function confirmWithdraw(){
-  let m=method.value;
-  let u=upi.value.trim();
+  let method = document.getElementById("method").value;
+  let upi = document.getElementById("upi").value.trim();
+  let amount = Number(document.getElementById("amountInput").value);
 
-  if(!m || !u){
-    showStatus("❌ Details भरें","fail");
+  if(!method || !upi || !amount){
+    showStatus("❌ सभी details भरें","fail");
     return;
   }
-  if(!u.includes("@")){
-    showStatus("❌ Invalid UPI ID","fail");
+  if(!upi.includes("@")){
+    showStatus("❌ Invalid UPI","fail");
+    return;
+  }
+  if(balance < amount){
+    showStatus("❌ Balance कम है","fail");
     return;
   }
 
   payPopup.style.display="none";
 
-  statusPopup.style.display="flex";
-  loader.style.display="block";
-  statusText.className="pending";
-  statusText.innerText="⏳ Processing...";
+  // Pending
+  showStatus("⏳ Processing","pending");
 
   setTimeout(()=>{
-    statusText.innerText="🔔 Pending";
+    showStatus("🔔 Pending","pending");
   },1500);
 
   setTimeout(()=>{
-    loader.style.display="none";
-    statusText.className="success";
-    statusText.innerText="✅ Payment Successful";
-
-    balance-=withdrawAmount;
+    balance -= amount;
     localStorage.setItem("balance",balance);
-    bal.innerText=balance;
+    bal.innerText = balance;
 
     history.unshift({
-      amount:withdrawAmount,
+      amount:amount,
+      method:method,
       status:"Success",
       time:new Date().toLocaleString()
     });
     localStorage.setItem("history",JSON.stringify(history));
 
-    if(withdrawAmount<=100 && !used.includes(withdrawAmount)){
-      used.push(withdrawAmount);
-      localStorage.setItem("usedAmounts",JSON.stringify(used));
+    if(amount <= 100 && !usedLevels.includes(amount)){
+      usedLevels.push(amount);
+      localStorage.setItem("usedLevels",JSON.stringify(usedLevels));
     }
 
-    setTimeout(()=>{
-      statusPopup.style.display="none";
-      renderWithdraw();
-    },2000);
-
-  },3500);
+    showStatus("✅ Success","success");
+    renderWithdraw();
+  },3000);
 }
 
-// ===== STATUS =====
+// ================= STATUS =================
 function showStatus(msg,type){
   statusPopup.style.display="flex";
-  loader.style.display="none";
-  statusText.className=type;
-  statusText.innerText=msg;
-  setTimeout(()=>statusPopup.style.display="none",2000);
+  statusText.innerText = msg;
+  statusText.className = type;
+  loader.style.display = (type==="pending") ? "block" : "none";
+
+  if(type !== "pending"){
+    setTimeout(()=>{
+      statusPopup.style.display="none";
+      loader.style.display="block";
+    },2000);
+  }
 }
 </script>
-
-</body>
-</html>

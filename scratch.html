@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Scratch</title>
+<title>Scratch Box</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -12,91 +12,97 @@ body{
   background:#f2f2f2;
   text-align:center;
 }
-
 .header{
   background:#16a085;
-  color:white;
+  color:#fff;
   padding:16px;
   font-size:20px;
 }
-
-.card{
-  background:white;
+.box{
+  background:#fff;
   margin:20px;
-  padding:25px;
+  padding:20px;
   border-radius:15px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
-
+.scratch-box{
+  margin:20px auto;
+  width:200px;
+  height:120px;
+  background:#f39c12;
+  color:#fff;
+  font-size:22px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.result{
+  font-size:26px;
+  margin-top:15px;
+  color:#2ecc71;
+}
 .btn{
   background:#2ecc71;
-  color:white;
+  color:#fff;
   border:none;
-  border-radius:25px;
-  padding:14px 30px;
-  font-size:18px;
-}
-
-.count{
-  margin-top:15px;
+  padding:10px 20px;
+  border-radius:20px;
   font-size:16px;
-  color:#555;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🎟 Scratch</div>
+<div class="header">🎁 Scratch Box</div>
 
-<div class="card">
-  <h2>Scratch & Win</h2>
-  <button class="btn" onclick="openScratch()">🎟 Scratch Now</button>
-  <div class="count" id="info"></div>
+<div class="box">
+  💰 Balance: ₹ <span id="bal">0</span>
+</div>
+
+<div class="box">
+  <p>Box खरीदो (₹1 खर्च)</p>
+
+  <div class="scratch-box" onclick="openBox()">
+    📦 Tap to Open
+  </div>
+
+  <div class="result" id="result"></div>
 </div>
 
 <script>
-// ================= SCRATCH DAILY LIMIT SYSTEM =================
-
-// आज की date
-let today = new Date().toISOString().split('T')[0];
-
-// saved data
-let savedDate = localStorage.getItem("scratchDate");
-let scratchCount = Number(localStorage.getItem("scratchCount") || 0);
-
-// date change होने पर reset
-if (savedDate !== today) {
-  scratchCount = 0;
-  localStorage.setItem("scratchDate", today);
-  localStorage.setItem("scratchCount", scratchCount);
+// ===== BALANCE =====
+if(!localStorage.getItem("balance")){
+  localStorage.setItem("balance",10);
 }
 
-// info दिखाना
-document.getElementById("info").innerText =
-  "आज बचे Scratch: " + (3 - scratchCount);
+let balance = Number(localStorage.getItem("balance"));
+document.getElementById("bal").innerText = balance;
 
-// scratch function
-function openScratch(){
+// possible rewards
+let rewards = [1,2,3,4];
 
-  if (scratchCount >= 3) {
-    alert("❌ आज का Scratch Limit पूरा हो गया\nकल फिर आना");
+function openBox(){
+  if(balance < 1){
+    alert("❌ Balance कम है");
     return;
   }
 
-  scratchCount++;
-  localStorage.setItem("scratchCount", scratchCount);
+  // box price = ₹1
+  balance -= 1;
 
-  // fake reward
-  let reward = 5;
-  let bal = Number(localStorage.getItem("balance") || 0);
-  bal += reward;
-  localStorage.setItem("balance", bal);
+  // random reward
+  let win = rewards[Math.floor(Math.random()*rewards.length)];
 
-  alert("🎉 Congrats!\nआपको ₹" + reward + " मिले");
+  balance += win;
 
-  document.getElementById("info").innerText =
-    "आज बचे Scratch: " + (3 - scratchCount);
+  localStorage.setItem("balance",balance);
+  document.getElementById("bal").innerText = balance;
+
+  document.getElementById("result").innerText =
+    "🎉 आपको ₹"+win+" मिले!";
 }
 </script>
 

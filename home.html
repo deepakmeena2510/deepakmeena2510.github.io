@@ -1,61 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Home</title>
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="css/style.css">
+<div class="app-container">
+    <div class="header">
+        <h3>CashMaster Pro</h3>
+    </div>
 
-<style>
-/* Balance Box */
-.balance-box{
-  margin:15px;
-  background:#ffffff;
-  border-radius:15px;
-  padding:20px;
-  text-align:center;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
-.balance-box h2{
-  margin:0;
-  font-size:18px;
-}
-.balance-box .amt{
-  font-size:36px;
-  font-weight:bold;
-  margin-top:8px;
-}
-</style>
-</head>
+    <div class="balance-card">
+        <p>Your Earnings</p>
+        <h1 id="balance">₹0.00</h1>
+    </div>
 
-<body class="app">
+    <div class="task-list">
+        <h4>Daily Tasks</h4>
+        <div class="task-item">
+            <div>
+                <strong>Watch Video Ads</strong><br>
+                <small>Earn ₹2.00</small>
+            </div>
+            <button class="btn-claim" onclick="completeTask(2)">Start</button>
+        </div>
+        
+        <div class="task-item">
+            <div>
+                <strong>Spin & Win</strong><br>
+                <small>Earn up to ₹5.00</small>
+            </div>
+            <button class="btn-claim" onclick="window.location.href='level.html'">Play</button>
+        </div>
+    </div>
 
-<!-- Top Bar -->
-<div class="topbar">Earning App</div>
-
-<!-- Balance -->
-<div class="balance-box">
-  <h2>💰 Balance</h2>
-  <div class="amt">₹ <span id="bal">0</span></div>
+    <nav class="nav-bar">
+        <a href="home.html" class="nav-item">🏠<br>Home</a>
+        <a href="refer.html" class="nav-item">👥<br>Refer</a>
+        <a href="Withdraw.html" class="nav-item">💰<br>Withdraw</a>
+        <a href="login.html" class="nav-item">👤<br>Profile</a>
+    </nav>
 </div>
-
-<!-- Buttons -->
-<div class="container grid">
-  <button class="btn" onclick="go('spin.html')">🎡 Spin</button>
-  <button class="btn" onclick="go('captcha.html')">🧩 Captcha</button>
-  <button class="btn" onclick="go('wallet.html')">💰 Wallet</button>
-  <button class="btn" onclick="go('referral.html')">👥 Referral</button>
-  <button class="btn" onclick="go('settings.html')">⚙️ Settings</button>
-</div>
-
-<script>
-function go(p){
-  window.location = p;
-}
-
-/* Balance show */
-document.getElementById("bal").innerText =
-  localStorage.getItem("balance") || 0;
-</script>
-
-</body>
-</html>
+<script src="app.js"></script>

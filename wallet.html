@@ -34,10 +34,10 @@ border-radius:50%;animation:spin 1s linear infinite;margin:auto}
 <div class="header">💼 Wallet</div>
 
 <div class="box">
-<b>💰 Current Balance:</b> ₹ <span id="bal">0</span>
+<b>💰 Current Balance:</b> <span id="balance">₹0</span>
 </div>
 
-<div class="box" id="withdrawList"></div>
+<div class="box" id="withdraw-options"></div>
 
 <!-- PAYMENT POPUP -->
 <div class="popup" id="payPopup">
@@ -52,11 +52,10 @@ border-radius:50%;animation:spin 1s linear infinite;margin:auto}
       <option>Google Pay</option>
     </select>
 
-    <input id="name" placeholder="Your Name">
-    <input id="upi" placeholder="UPI ID">
+    <input id="upiId" placeholder="Enter UPI ID">
 
     <br><br>
-    <button class="btn" onclick="confirmWithdraw()">Confirm</button>
+    <button class="btn" onclick="startWithdraw()">Confirm</button>
   </div>
 </div>
 
@@ -69,87 +68,91 @@ border-radius:50%;animation:spin 1s linear infinite;margin:auto}
 </div>
 
 <script>
-// INITIAL DATA
-if(!localStorage.getItem("balance")){
-  localStorage.setItem("balance",500);
-}
-let balance = Number(localStorage.getItem("balance"));
-document.getElementById("bal").innerText = balance;
-
-let history = JSON.parse(localStorage.getItem("history") || "[]");
+// ================= INITIAL DATA =================
+let balance = parseFloat(localStorage.getItem("userBalance")) || 500;
+let currentLevel = parseInt(localStorage.getItem("withdrawLevel")) || 10;
 let withdrawAmount = 0;
 
-// WITHDRAW OPTIONS
-let amounts = [10,30,50,100,200,500];
-let list = document.getElementById("withdrawList");
+document.getElementById("balance").innerText = "₹" + balance;
 
-function renderWithdraw(){
-  list.innerHTML="";
-  amounts.forEach(a=>{
-    let div=document.createElement("div");
-    div.className="row";
-    div.innerHTML=`<span>₹ ${a}</span><button class="btn">Withdraw</button>`;
-    div.querySelector("button").onclick=()=>{
-      if(balance<a){
-        showStatus("❌ Balance कम है","fail");
-        return;
-      }
-      withdrawAmount=a;
+// ================= WITHDRAW UI =================
+function updateWithdrawUI(){
+  let box = document.getElementById("withdraw-options");
+  box.innerHTML = "";
+
+  let btn = document.createElement("button");
+  btn.className = "btn";
+  btn.innerText = "Withdraw ₹" + currentLevel;
+  btn.onclick = ()=>{
+    withdrawAmount = currentLevel;
+    payPopup.style.display="flex";
+  };
+  box.appendChild(btn);
+
+  if(currentLevel >= 200){
+    let b2 = document.createElement("button");
+    b2.className="btn";
+    b2.style.marginLeft="10px";
+    b2.innerText="Withdraw ₹300";
+    b2.onclick=()=>{
+      withdrawAmount=300;
       payPopup.style.display="flex";
     };
-    list.appendChild(div);
-  });
+    box.appendChild(b2);
+  }
 }
-renderWithdraw();
+updateWithdrawUI();
 
-// CONFIRM WITHDRAW
-function confirmWithdraw(){
-  let m=method.value;
-  let n=name.value.trim();
-  let u=upi.value.trim();
+// ================= WITHDRAW PROCESS =================
+function startWithdraw(){
+  let upi = document.getElementById("upiId").value.trim();
+  let method = document.getElementById("method").value;
 
-  if(!m||!n||!u){
-    showStatus("❌ All details required","fail");
+  if(!upi || !method){
+    alert("❌ Details भरें");
     return;
   }
-  if(!u.includes("@")){
-    showStatus("❌ Invalid UPI ID","fail");
+  if(!upi.includes("@")){
+    alert("❌ Invalid UPI");
+    return;
+  }
+  if(balance < withdrawAmount){
+    alert("❌ Balance कम है");
     return;
   }
 
   payPopup.style.display="none";
-  showStatus("⏳ Pending...","pending");
-
-  setTimeout(()=>{
-    balance -= withdrawAmount;
-    localStorage.setItem("balance",balance);
-    bal.innerText = balance;
-
-    history.unshift({
-      amount:withdrawAmount,
-      method:m,
-      status:"Success",
-      time:new Date().toLocaleString()
-    });
-    localStorage.setItem("history",JSON.stringify(history));
-
-    showStatus("✅ Withdraw Successful","success");
-  },3000);
-}
-
-// STATUS FUNCTION
-function showStatus(msg,type){
   statusPopup.style.display="flex";
-  statusText.innerText=msg;
-  statusText.className=type;
-  loader.style.display = type=="pending" ? "block" : "none";
+  loader.style.display="block";
+  statusText.innerText="⏳ Processing...";
 
-  if(type!="pending"){
+  // PENDING
+  setTimeout(()=>{
+    statusText.innerText="🔔 Pending";
+  },1500);
+
+  // SUCCESS
+  setTimeout(()=>{
+    loader.style.display="none";
+    statusText.innerText="✅ Payment Successful";
+
+    balance -= withdrawAmount;
+    localStorage.setItem("userBalance",balance);
+    document.getElementById("balance").innerText="₹"+balance;
+
+    if(currentLevel==10) currentLevel=30;
+    else if(currentLevel==30) currentLevel=50;
+    else if(currentLevel==50) currentLevel=100;
+    else if(currentLevel==100) currentLevel=200;
+
+    localStorage.setItem("withdrawLevel",currentLevel);
+
     setTimeout(()=>{
       statusPopup.style.display="none";
-      loader.style.display="block";
+      location.reload();
     },2000);
-  }
+
+  },3500);
 }
 </script>
 

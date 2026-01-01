@@ -1,71 +1,57 @@
-body.app{
+*{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#f2f4f7;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial;
+}
+
+body{
+  background:#f2f2f2;
+}
+
+.app{
+  min-height:100vh;
+  background:#fff;
 }
 
 .topbar{
-  background:#1e8449;
+  background:#27ae60;
   color:white;
   padding:15px;
-  font-size:18px;
   text-align:center;
+  font-size:18px;
 }
 
 .container{
   padding:15px;
 }
 
-.balance-card{
-  background:#2c3e50;
-  color:white;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-  margin-bottom:15px;
-}
-
-.balance-card h1{
-  margin:10px 0 0;
-  font-size:36px;
-}
-
 .card{
   background:white;
   padding:15px;
-  border-radius:12px;
+  border-radius:10px;
   margin-bottom:15px;
+  box-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+
+.btn{
+  width:100%;
+  padding:15px;
+  background:#27ae60;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
 }
 
 .input{
   width:100%;
   padding:12px;
-  font-size:16px;
-  border-radius:8px;
-  border:1px solid #ccc;
+  margin-bottom:10px;
 }
 
-.amount-grid{
+.grid{
   display:grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:1fr 1fr;
   gap:10px;
-  margin-bottom:20px;
-}
-
-.amount-grid button{
-  padding:15px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  background:#ecf0f1;
-}
-
-.withdraw-btn{
-  width:100%;
-  padding:15px;
-  font-size:18px;
-  background:#e67e22;
-  color:white;
-  border:none;
-  border-radius:12px;
 }

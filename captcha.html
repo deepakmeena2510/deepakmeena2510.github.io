@@ -1,36 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Captcha</title>
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Question Task</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+}
+
+.header{
+  background:#2ecc71;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-size:18px;
+}
+
+.box{
+  background:white;
+  margin:20px;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.question{
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+}
+
+.submit{
+  background:#2ecc71;
+  color:white;
+}
+
+.back{
+  background:#bbb;
+}
+</style>
 </head>
 
-<body class="app">
-<div class="topbar">Captcha Task</div>
+<body>
 
-<div class="container">
-  <div class="card">
-    <p>Solve: <b>1234</b></p>
-    <input class="input" id="cap">
-    <button class="btn" onclick="solve()">Submit</button>
-  </div>
+<div class="header">🧩 Question Task (3 / Day)</div>
+
+<div class="box">
+  <div class="question" id="ques"></div>
+
+  <input id="ans" placeholder="अपना उत्तर लिखें">
+
+  <button class="submit" onclick="check()">Submit</button>
+  <button class="back" onclick="goBack()">Back</button>
 </div>
 
 <script>
-let capCount = localStorage.getItem("cap") || 0;
+let questions = [
+  {q:"5 + 3 = ?", a:"8"},
+  {q:"10 - 4 = ?", a:"6"},
+  {q:"Apple का रंग क्या है?", a:"लाल"},
+  {q:"Dog का हिंदी नाम?", a:"कुत्ता"},
+  {q:"2 × 6 = ?", a:"12"}
+];
 
-function solve(){
-  if(capCount>=3){ alert("Limit over"); return; }
+let q = questions[Math.floor(Math.random()*questions.length)];
+document.getElementById("ques").innerText = q.q;
 
-  let bal = Number(localStorage.getItem("balance")||0);
-  bal+=2;
-  localStorage.setItem("balance",bal);
-  capCount++;
-  localStorage.setItem("cap",capCount);
+function check(){
+  let user = document.getElementById("ans").value.trim();
+  if(user === q.a){
+    let reward = Math.floor(Math.random()*3)+1;
+    let bal = Number(localStorage.getItem("balance") || 0);
+    localStorage.setItem("balance", bal + reward);
+    alert("✅ सही उत्तर! ₹"+reward+" जोड़े गए");
+    location.reload();
+  }else{
+    alert("❌ गलत उत्तर");
+  }
+}
 
-  alert("₹2 Added");
+function goBack(){
+  window.location.href="index.html";
 }
 </script>
+
 </body>
 </html>

@@ -2,147 +2,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Home</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f2f2f2;
-  padding-bottom:90px;
-}
-
-/* Balance Card */
-.balance-box{
-  margin:20px;
-  background:#fff;
-  border-radius:15px;
-  padding:20px;
-  text-align:center;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
-
-.balance-box h2{
-  margin:0;
-  font-size:18px;
-}
-
-.balance-box .amt{
-  font-size:40px;
-  font-weight:bold;
-  margin-top:10px;
-}
-
-/* Main Menu */
-.menu{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin:20px;
-}
-
-.menu div{
-  background:white;
-  padding:25px 10px;
-  border-radius:15px;
-  text-align:center;
-  box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  font-size:16px;
-  cursor:pointer;
-}
-
-.menu span{
-  display:block;
-  font-size:35px;
-  margin-bottom:5px;
-}
-
-/* Bottom Options */
-.bottom-options{
-  position:fixed;
-  bottom:15px;
-  left:0;
-  right:0;
-  display:flex;
-  gap:10px;
-  margin:0 15px;
-}
-
-.bottom-options div{
-  flex:1;
-  background:#2ecc71;
-  color:white;
-  padding:14px 5px;
-  text-align:center;
-  border-radius:12px;
-  font-size:15px;
-  cursor:pointer;
-}
-
-.home-only{
-  font-size:26px;
-}
-</style>
+<title>Login</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<!-- Balance -->
-<div class="balance-box">
-  <h2>💰 Balance</h2>
-  <div class="amt">₹ <span id="bal">0</span></div>
-</div>
+<h2>Sign Up / Login</h2>
 
-<!-- Main Buttons -->
-<div class="menu">
-  <div onclick="location.href='spin.html'">
-    <span>🎡</span>Spin
-  </div>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<input id="pass" placeholder="Password">
 
-  <div onclick="location.href='captcha.html'">
-    <span>🧩</span>Captcha
-  </div>
+<button onclick="login()">Continue</button>
 
-  <div onclick="location.href='scratch.html'">
-    <span>🎟</span>Scratch
-  </div>
-
-  <div onclick="location.href='wallet.html'">
-    <span>💰</span>Wallet
-  </div>
-</div>
-
-<!-- Bottom Options -->
-<div class="bottom-options">
-  <div class="home-only" onclick="location.href='index.html'">
-    🏠
-  </div>
-
-  <div>
-    💰 Tax
-  </div>
-
-  <div onclick="location.href='wallet.html'">
-    💸 Withdraw
-  </div>
-</div>
-
-<!-- ✅ FINAL BALANCE SCRIPT (AUTO UPDATE) -->
 <script>
-function loadBalance(){
-  let bal = localStorage.getItem("balance");
-  if(bal === null){
-    bal = 0;
-    localStorage.setItem("balance", 0);
+function login(){
+  localStorage.setItem("user","true");
+  if(!localStorage.getItem("balance")){
+    localStorage.setItem("balance",500);
   }
-  document.getElementById("bal").innerText = bal;
+  location.href="home.html";
 }
-
-loadBalance();
-
-/* Jab wallet se wapas aaye tab bhi update ho */
-window.addEventListener("focus", loadBalance);
 </script>
 
 </body>

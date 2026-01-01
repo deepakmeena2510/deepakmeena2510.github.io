@@ -1,27 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Tasks</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
+<body>
 
-<body class="app">
-<div class="topbar">Login</div>
+<h2>Daily Tasks</h2>
+<p>Balance: ₹<span class="bal">0</span></p>
 
-<div class="container">
-  <div class="card">
-    <input class="input" id="email" placeholder="Email">
-    <input class="input" id="pass" type="password" placeholder="Password">
-    <button class="btn" onclick="login()">Login</button>
-  </div>
-</div>
+<button onclick="clickEarn()">Click & Earn ₹2</button>
+<button onclick="dailyBonus()">Daily Bonus ₹1</button>
 
-<script>
-function login(){
-  localStorage.setItem("user","logged");
-  window.location="home.html";
-}
-</script>
+<br><br>
+<a href="scratch.html">🎟 Scratch & Earn</a><br>
+<a href="refer.html">👥 Referral</a><br>
+<a href="level.html">🆙 Level</a><br>
+<a href="history.html">📜 History</a><br>
+<a href="wallet.html">💰 Wallet</a>
+
+<script src="js/app.js"></script>
+<script>updateBalance();</script>
 </body>
 </html>

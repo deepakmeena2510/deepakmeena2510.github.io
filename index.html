@@ -1,19 +1,23 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>मेरी वेबसाइट</title>
+<meta charset="UTF-8">
+<title>Login App</title>
+<script src="app.js"></script>
+<style>
+body{font-family:Arial;background:#f2f2f2;text-align:center;}
+.box{margin-top:100px;background:#fff;padding:20px;border-radius:10px;width:280px;margin:auto;}
+input,button{width:100%;padding:10px;margin:5px 0;}
+button{background:green;color:#fff;border:none;}
+</style>
 </head>
+
 <body>
-
-<h1>हमारी वेबसाइट में आपका स्वागत है</h1>
-
-<p>यह हमारी official website है।</p>
-
-<p>
-यहाँ आपको हमारी सभी services की पूरी जानकारी मिलेगी।  
-हम अपने ग्राहकों को ईमानदार, सुरक्षित और भरोसेमंद services प्रदान करते हैं।
-</p>
-
+<div class="box">
+<h2>Login</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
 </body>
 </html>

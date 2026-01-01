@@ -1,33 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Login App</title>
-<script src="app.js"></script>
+<title>Simple Earning App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:Arial;background:#f2f2f2;text-align:center;}
-.box{margin-top:100px;background:#fff;padding:20px;border-radius:10px;width:280px;margin:auto;}
-input,button{width:100%;padding:10px;margin:5px 0;}
-button{background:green;color:#fff;border:none;}
+body{
+  font-family: Arial;
+  background:#f2f2f2;
+  text-align:center;
+  padding:20px;
+}
+.box{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+button{
+  padding:15px;
+  width:100%;
+  border:none;
+  background:#27ae60;
+  color:white;
+  font-size:16px;
+  border-radius:8px;
+}
 </style>
 </head>
-<button onclick="earn()">Click & Earn ₹2</button>
+
+<body>
+
+<h2>💰 Simple Earning App</h2>
+
+<div class="box">
+  <h3>Balance</h3>
+  <h1>₹ <span id="bal">0</span></h1>
+</div>
+
+<div class="box">
+  <h3>Task 1</h3>
+  <button onclick="earn(2)">Click & Earn ₹2</button>
+</div>
+
+<div class="box">
+  <h3>Task 2</h3>
+  <button onclick="earn(5)">Watch & Earn ₹5</button>
+</div>
+
+<div class="box">
+  <h3>Withdraw</h3>
+  <input id="upi" placeholder="Enter UPI ID" style="padding:10px;width:90%"><br><br>
+  <button onclick="withdraw()">Withdraw ₹50</button>
+</div>
 
 <script>
-let balance = localStorage.getItem("bal") || 0;
+let balance = localStorage.getItem("balance") || 0;
+document.getElementById("bal").innerText = balance;
 
-function earn(){
-  balance = Number(balance) + 2;
-  localStorage.setItem("bal", balance);
-  alert("₹2 added. Balance: ₹" + balance);
+function earn(amount){
+  balance = Number(balance) + amount;
+  localStorage.setItem("balance", balance);
+  document.getElementById("bal").innerText = balance;
+  alert("₹"+amount+" added!");
+}
+
+function withdraw(){
+  let upi = document.getElementById("upi").value;
+  if(!upi){ alert("UPI ID daalo"); return; }
+  if(balance < 50){ alert("Minimum ₹50 chahiye"); return; }
+  balance -= 50;
+  localStorage.setItem("balance", balance);
+  document.getElementById("bal").innerText = balance;
+  alert("Withdraw request sent!");
 }
 </script>
-<body>
-<div class="box">
-<h2>Login</h2>
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-</div>
+
 </body>
 </html>

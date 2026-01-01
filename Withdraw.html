@@ -1,131 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Withdraw</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="app-container">
+    <div class="header">
+        <h3>Withdraw Funds</h3>
+    </div>
+
+    <div class="balance-card">
+        <p>Current Balance</p>
+        <h1 id="balance">₹0.00</h1>
+    </div>
+
+    <div class="withdrawal-section" style="padding: 20px;">
+        <input type="text" id="upiId" placeholder="Enter UPI ID (e.g., name@ybl)" 
+               style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ccc;">
+        
+        <h4>Select Amount</h4>
+        <div id="withdraw-options" class="options-grid">
+            </div>
+    </div>
+
+    <nav class="nav-bar">
+        <a href="home.html" class="nav-item">🏠<br>Home</a>
+        <a href="Withdraw.html" class="nav-item">💰<br>Withdraw</a>
+    </nav>
+</div>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f2f2f2;
-}
-.box{
-  background:#fff;
-  margin:15px;
-  padding:18px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  text-align:center;
-}
-button{
-  padding:12px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  background:#2ecc71;
-  color:white;
-  font-size:16px;
-  margin-top:10px;
-}
-button:disabled{
-  background:#ccc;
-}
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .withdraw-btn { 
+        padding: 15px; border: 1px solid #2ecc71; background: white; 
+        color: #2ecc71; border-radius: 8px; font-weight: bold; cursor: pointer;
+    }
+    .withdraw-btn:hover { background: #2ecc71; color: white; }
 </style>
-</head>
-
-<body>
-
-<div class="box">
-  💰 Balance: ₹ <span id="bal">0</span>
-</div>
-
-<div class="box">
-  <h3>UPI ID</h3>
-  <input type="text" id="upi" placeholder="example@upi">
-</div>
-
-<div id="withdrawList"></div>
-
-<script>
-/* BALANCE */
-let balance = parseInt(localStorage.getItem("balance")) || 0;
-document.getElementById("bal").innerText = balance;
-
-/* AUTO WITHDRAW LEVEL */
-let level = 1;
-if(balance >= 500) level = 4;
-else if(balance >= 300) level = 3;
-else if(balance >= 100) level = 2;
-localStorage.setItem("withdrawLevel", level);
-
-/* WITHDRAW LEVELS */
-let withdrawLevels = [
-  {amt:10, once:true, level:1},
-  {amt:30, once:true, level:1},
-  {amt:50, once:true, level:2},
-  {amt:100, once:true, level:2},
-  {amt:200, once:false, level:3},
-  {amt:300, once:false, level:3},
-  {amt:500, once:false, level:4}
-];
-
-let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
-let list = document.getElementById("withdrawList");
-
-function render(){
-  list.innerHTML = "";
-
-  withdrawLevels.forEach(w=>{
-    if(level < w.level) return;
-    if(w.once && used.includes(w.amt)) return;
-
-    let box = document.createElement("div");
-    box.className = "box";
-
-    let btn = document.createElement("button");
-    btn.innerText = "Withdraw ₹" + w.amt;
-
-    btn.onclick = function(){
-      let upi = document.getElementById("upi").value.trim();
-      if(upi === ""){
-        alert("❌ UPI ID डालो");
-        return;
-      }
-      if(balance < w.amt){
-        alert("❌ Balance कम है");
-        return;
-      }
-
-      balance -= w.amt;
-      localStorage.setItem("balance", balance);
-      document.getElementById("bal").innerText = balance;
-
-      if(w.once){
-        used.push(w.amt);
-        localStorage.setItem("usedWithdraw", JSON.stringify(used));
-      }
-
-      alert("✅ Withdraw Request भेज दी गई\n₹"+w.amt+"\nUPI: "+upi);
-      render();
-    };
-
-    box.innerHTML = "<h3>Level "+w.level+"</h3>";
-    box.appendChild(btn);
-    list.appendChild(box);
-  });
-}
-
-render();
-</script>
-
-</body>
-</html>

@@ -42,28 +42,48 @@ button:disabled{
 <body>
 
 <div class="box">
-  💰 Balance: ₹ <span id="bal">0</span>
+  💰 Balance: ₹ <span id="bal">0</span><br>
+  ⭐ Withdraw Level: <span id="level">1</span>
 </div>
 
 <div id="withdrawList"></div>
 
 <script>
-// balance
+// ================= BALANCE =================
 let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// withdraw levels
+// ================= AUTO LEVEL SYSTEM =================
+let withdrawLevel = parseInt(localStorage.getItem("withdrawLevel")) || 1;
+
+function autoUpdateWithdrawLevel(){
+  if(balance >= 500){
+    withdrawLevel = 4;
+  }else if(balance >= 300){
+    withdrawLevel = 3;
+  }else if(balance >= 100){
+    withdrawLevel = 2;
+  }else{
+    withdrawLevel = 1;
+  }
+  localStorage.setItem("withdrawLevel", withdrawLevel);
+  document.getElementById("level").innerText = withdrawLevel;
+}
+
+autoUpdateWithdrawLevel();
+
+// ================= WITHDRAW LEVELS =================
 let withdrawLevels = [
-  {amt:10, once:true},
-  {amt:30, once:true},
-  {amt:50, once:true},
-  {amt:100, once:true},
-  {amt:200, once:false},
-  {amt:300, once:false},
-  {amt:500, once:false}
+  {amt:10, once:true, level:1},
+  {amt:30, once:true, level:1},
+  {amt:50, once:true, level:1},
+  {amt:100, once:true, level:2},
+  {amt:200, once:false, level:2},
+  {amt:300, once:false, level:3},
+  {amt:500, once:false, level:4}
 ];
 
-// already used one-time withdraws
+// used one-time withdraws
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
 
 let list = document.getElementById("withdrawList");
@@ -73,6 +93,7 @@ function render(){
 
   withdrawLevels.forEach(w=>{
     if(w.once && used.includes(w.amt)) return;
+    if(withdrawLevel < w.level) return;
 
     let div = document.createElement("div");
     div.className = "box";
@@ -95,6 +116,7 @@ function render(){
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
 
+      autoUpdateWithdrawLevel();
       alert("✅ Withdraw Request भेज दी गई ₹" + w.amt);
       render();
     };

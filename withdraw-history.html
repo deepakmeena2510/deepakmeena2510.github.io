@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Withdraw History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:sans-serif;background:#f4f6f8}
+.header{
+  background:#16a085;
+  color:#fff;
+  padding:18px;
+  text-align:center;
+  font-size:18px
+}
+.card{
+  background:#fff;
+  margin:12px;
+  padding:14px;
+  border-radius:14px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1)
+}
+.amount{font-size:18px;font-weight:bold}
+.status{margin-top:6px}
+.pending{color:orange}
+.success{color:green}
+.processing{color:#3498db}
+.time{font-size:12px;color:#777;margin-top:4px}
+.empty{
+  text-align:center;
+  margin-top:40px;
+  color:#999
+}
+.clear{
+  margin:12px;
+  padding:10px;
+  width:calc(100% - 24px);
+  border:none;
+  border-radius:10px;
+  background:#e74c3c;
+  color:#fff;
+  font-size:15px
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📜 Withdraw History</div>
+
+<button class="clear" onclick="clearHistory()">🗑 Clear History</button>
+
+<div id="list"></div>
+
+<script>
+let history = JSON.parse(localStorage.getItem("history") || "[]");
+let list = document.getElementById("list");
+
+if(history.length==0){
+  list.innerHTML = `<div class="empty">❌ No Withdraw History</div>`;
+}else{
+  history.slice().reverse().forEach(x=>{
+    let card=document.createElement("div");
+    card.className="card";
+
+    let statusClass =
+      x.status=="Success" ? "success" :
+      x.status=="Pending" ? "pending" : "processing";
+
+    card.innerHTML=`
+      <div class="amount">₹ ${x.amt}</div>
+      <div class="status ${statusClass}">
+        ${x.status=="Pending"?"🔔 Pending":
+          x.status=="Success"?"✅ Success":"⏳ Processing"}
+      </div>
+      <div class="time">${x.time || ""}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function clearHistory(){
+  if(confirm("History clear करनी है?")){
+    localStorage.removeItem("history");
+    location.reload();
+  }
+}
+</script>
+
+</body>
+</html>

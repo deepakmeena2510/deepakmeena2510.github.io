@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Referral</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f2f2f2;
+}
+.box{
+  background:#fff;
+  margin:15px;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  text-align:center;
+}
+.code{
+  font-size:22px;
+  font-weight:bold;
+  margin:10px 0;
+  letter-spacing:2px;
+}
+input{
+  width:90%;
+  padding:10px;
+  font-size:16px;
+  margin-top:10px;
+}
+button{
+  margin-top:12px;
+  padding:10px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  background:#2ecc71;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h3>👥 आपका Referral Code</h3>
+  <div class="code" id="myCode"></div>
+</div>
+
+<div class="box">
+  <h3>📥 Friend का Referral Code डालें</h3>
+  <input type="text" id="refInput" placeholder="6 अक्षर का Referral Code डालें">
+  <button onclick="applyReferral()">Submit</button>
+</div>
+
+<script>
+// ✅ 6 अक्षर + नंबर वाला unique code
+function generateCode(){
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for(let i = 0; i < 6; i++){
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// 👉 अपना referral code
+let myCode = localStorage.getItem("my_ref_code");
+if(!myCode){
+  myCode = generateCode();
+  localStorage.setItem("my_ref_code", myCode);
+}
+document.getElementById("myCode").innerText = myCode;
+
+// 👉 Referral apply
+function applyReferral(){
+  let code = document.getElementById("refInput").value.trim().toUpperCase();
+
+  if(code === ""){
+    alert("Referral code डालिए");
+    return;
+  }
+
+  if(code === myCode){
+    alert("❌ अपना referral code खुद use नहीं कर सकते");
+    return;
+  }
+
+  if(localStorage.getItem("used_ref")){
+    alert("❌ Referral पहले ही apply हो चुका है");
+    return;
+  }
+
+  localStorage.setItem("used_ref", code);
+  alert("✅ Referral सफलतापूर्वक apply हो गया");
+}
+</script>
+
+</body>
+</html>

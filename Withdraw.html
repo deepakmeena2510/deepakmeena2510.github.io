@@ -11,7 +11,6 @@ body{
   font-family:Arial;
   background:#f2f2f2;
 }
-
 .box{
   background:#fff;
   margin:15px;
@@ -19,18 +18,7 @@ body{
   border-radius:12px;
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
   text-align:center;
-  font-size:16px;
 }
-
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  font-size:16px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
 button{
   padding:12px;
   width:100%;
@@ -39,119 +27,100 @@ button{
   background:#2ecc71;
   color:white;
   font-size:16px;
-  cursor:pointer;
   margin-top:10px;
 }
-
 button:disabled{
   background:#ccc;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Balance -->
 <div class="box">
   💰 Balance: ₹ <span id="bal">0</span>
 </div>
 
-<!-- UPI BOX -->
 <div class="box">
-  <h3>🏦 UPI ID</h3>
+  <h3>UPI ID</h3>
   <input type="text" id="upi" placeholder="example@upi">
 </div>
 
-<!-- Withdraw Buttons -->
 <div id="withdrawList"></div>
 
 <script>
-// ================= BALANCE =================
+/* BALANCE */
 let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// ================= AUTO LEVEL =================
-let withdrawLevel = 1;
-if(balance >= 500){
-  withdrawLevel = 4;
-}else if(balance >= 300){
-  withdrawLevel = 3;
-}else if(balance >= 100){
-  withdrawLevel = 2;
-}
-localStorage.setItem("withdrawLevel", withdrawLevel);
+/* AUTO WITHDRAW LEVEL */
+let level = 1;
+if(balance >= 500) level = 4;
+else if(balance >= 300) level = 3;
+else if(balance >= 100) level = 2;
+localStorage.setItem("withdrawLevel", level);
 
-// ================= LEVELS =================
+/* WITHDRAW LEVELS */
 let withdrawLevels = [
   {amt:10, once:true, level:1},
   {amt:30, once:true, level:1},
-  {amt:50, once:true, level:1},
+  {amt:50, once:true, level:2},
   {amt:100, once:true, level:2},
-  {amt:200, once:false, level:2},
+  {amt:200, once:false, level:3},
   {amt:300, once:false, level:3},
   {amt:500, once:false, level:4}
 ];
 
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
-let history = JSON.parse(localStorage.getItem("withdrawHistory") || "[]");
-
 let list = document.getElementById("withdrawList");
 
-// ================= RENDER =================
 function render(){
   list.innerHTML = "";
 
   withdrawLevels.forEach(w=>{
+    if(level < w.level) return;
     if(w.once && used.includes(w.amt)) return;
-    if(withdrawLevel < w.level) return;
 
-    let div = document.createElement("div");
-    div.className = "box";
+    let box = document.createElement("div");
+    box.className = "box";
 
     let btn = document.createElement("button");
     btn.innerText = "Withdraw ₹" + w.amt;
 
     btn.onclick = function(){
       let upi = document.getElementById("upi").value.trim();
-
-      if(upi === "" || !upi.includes("@")){
-        alert("❌ सही UPI ID डालो");
+      if(upi === ""){
+        alert("❌ UPI ID डालो");
         return;
       }
-
       if(balance < w.amt){
         alert("❌ Balance कम है");
         return;
       }
 
-      // deduct balance
       balance -= w.amt;
       localStorage.setItem("balance", balance);
       document.getElementById("bal").innerText = balance;
 
-      // one-time remove
       if(w.once){
         used.push(w.amt);
         localStorage.setItem("usedWithdraw", JSON.stringify(used));
       }
 
-      // save withdraw history
-      history.push({
-        amount: w.amt,
-        upi: upi,
-        status: "Pending",
-        time: new Date().toLocaleString()
-      });
-      localStorage.setItem("withdrawHistory", JSON.stringify(history));
-
-      alert("✅ Withdraw Request भेज दी गई\n₹"+w.amt+"\nStatus: Pending");
-
-      location.reload();
+      alert("✅ Withdraw Request भेज दी गई\n₹"+w.amt+"\nUPI: "+upi);
+      render();
     };
 
-    div.innerHTML = `<b>Withdraw ₹${w.amt}</b>`;
-    div.appendChild(btn);
-    list.appendChild(div);
+    box.innerHTML = "<h3>Level "+w.level+"</h3>";
+    box.appendChild(btn);
+    list.appendChild(box);
   });
 }
 

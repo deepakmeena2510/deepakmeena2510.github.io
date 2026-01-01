@@ -1,5 +1,15 @@
 <script>
-// INITIAL DATA
+/* ====== ADD FIX (यह पहले नहीं था, इसी वजह से code टूट रहा था) ====== */
+let bal = document.getElementById("bal");
+let payPopup = document.getElementById("payPopup");
+let statusPopup = document.getElementById("statusPopup");
+let loader = document.getElementById("loader");
+let statusText = document.getElementById("statusText");
+let method = document.getElementById("method");
+let name = document.getElementById("name");
+let upi = document.getElementById("upi");
+/* =================================================================== */
+
 if(!localStorage.getItem("balance")){
   localStorage.setItem("balance",500);
 }
@@ -9,82 +19,83 @@ bal.innerText = balance;
 
 let history = JSON.parse(localStorage.getItem("history") || "[]");
 let withdrawAmount = 0;
-let isProcessing = false;
 
-// WITHDRAW OPTIONS
 let amounts = [10,30,50,100,200,500];
 let list = document.getElementById("withdrawList");
 
 function renderWithdraw(){
   list.innerHTML="";
   amounts.forEach(a=>{
-    let div=document.createElement("div");
-    div.className="row";
-    div.innerHTML=`<span>₹ ${a}</span><button class="btn">Withdraw</button>`;
-    div.querySelector("button").onclick=()=>{
-      if(isProcessing) return;
+    let d=document.createElement("div");
+    d.className="row";
+    d.innerHTML=`₹ ${a} <button class="btn">Withdraw</button>`;
+    d.querySelector("button").onclick=()=>{
       if(balance<a){
-        showStatus("❌ Balance कम है","fail");
+        openStatus("❌ Balance कम है");
         return;
       }
       withdrawAmount=a;
       payPopup.style.display="flex";
     };
-    list.appendChild(div);
+    list.appendChild(d);
   });
 }
 renderWithdraw();
 
-// CONFIRM WITHDRAW
 function confirmWithdraw(){
-  if(isProcessing) return;
-
   let m=method.value;
   let n=name.value.trim();
   let u=upi.value.trim();
 
   if(!m||!n||!u){
-    showStatus("❌ All details required","fail");
+    openStatus("❌ Details भरें");
     return;
   }
   if(!u.includes("@")){
-    showStatus("❌ Invalid UPI ID","fail");
+    openStatus("❌ Invalid UPI");
     return;
   }
 
-  isProcessing = true;
   payPopup.style.display="none";
 
-  // STEP 1: PENDING
+  // STEP 1 : PROCESSING
   statusPopup.style.display="flex";
   loader.style.display="block";
-  statusText.className="pending";
-  statusText.innerText="⏳ Pending...";
+  statusText.innerText="⏳ Processing...";
 
-  // STEP 2: SUCCESS AFTER DELAY
   setTimeout(()=>{
-    balance -= withdrawAmount;
-    localStorage.setItem("balance",balance);
-    bal.innerText = balance;
+    statusText.innerText="🔔 Pending";
 
-    history.unshift({
-      amount:withdrawAmount,
-      method:m,
-      status:"Success",
-      time:new Date().toLocaleString()
-    });
-    localStorage.setItem("history",JSON.stringify(history));
-
-    loader.style.display="none";
-    statusText.className="success";
-    statusText.innerText="✅ Withdraw Successful";
-
+    // STEP 2 : SUCCESS
     setTimeout(()=>{
-      statusPopup.style.display="none";
-      isProcessing = false;
-      renderWithdraw();
+      loader.style.display="none";
+      statusText.innerText="✅ Withdraw Successful";
+
+      balance -= withdrawAmount;
+      localStorage.setItem("balance",balance);
+      bal.innerText = balance;
+
+      history.unshift({
+        amount:withdrawAmount,
+        method:m,
+        status:"Success",
+        time:new Date().toLocaleString()
+      });
+      localStorage.setItem("history",JSON.stringify(history));
+
+      setTimeout(()=>{
+        statusPopup.style.display="none";
+      },2000);
+
     },2000);
 
-  },3000);
+  },1000);
+}
+
+function openStatus(msg){
+  statusPopup.style.display="flex";
+  loader.style.display="none";
+  statusText.innerText=msg;
+  setTimeout(()=>statusPopup.style.display="none",2000);
 }
 </script>

@@ -32,6 +32,10 @@ button{
   font-size:16px;
   cursor:pointer;
 }
+
+button:disabled{
+  background:#ccc;
+}
 </style>
 </head>
 
@@ -44,62 +48,60 @@ button{
 <div id="withdrawList"></div>
 
 <script>
-let balance = parseInt(localStorage.getItem("balance") || 0);
+// balance
+let balance = parseInt(localStorage.getItem("balance")) || 0;
 document.getElementById("bal").innerText = balance;
 
-// one-time withdraw levels
-let oneTimeLevels = [10, 30, 50, 100];
+// withdraw levels
+let withdrawLevels = [
+  {amt:10, once:true},
+  {amt:30, once:true},
+  {amt:50, once:true},
+  {amt:100, once:true},
+  {amt:200, once:false},
+  {amt:300, once:false},
+  {amt:500, once:false}
+];
 
-// permanent levels
-let permanentLevels = [200, 300, 500];
-
-// already used withdraws
+// already used one-time withdraws
 let used = JSON.parse(localStorage.getItem("usedWithdraw") || "[]");
 
 let list = document.getElementById("withdrawList");
 
-// render buttons
 function render(){
   list.innerHTML = "";
 
-  oneTimeLevels.forEach(amount=>{
-    if(!used.includes(amount)){
-      list.innerHTML += `
-      <div class="box">
-        Withdraw ₹${amount}
-        <br><br>
-        <button onclick="withdraw(${amount}, true)">Withdraw</button>
-      </div>`;
-    }
+  withdrawLevels.forEach(w=>{
+    if(w.once && used.includes(w.amt)) return;
+
+    let div = document.createElement("div");
+    div.className = "box";
+
+    let btn = document.createElement("button");
+    btn.innerText = "Withdraw ₹" + w.amt;
+
+    btn.onclick = function(){
+      if(balance < w.amt){
+        alert("❌ Balance कम है");
+        return;
+      }
+
+      balance -= w.amt;
+      localStorage.setItem("balance", balance);
+      document.getElementById("bal").innerText = balance;
+
+      if(w.once){
+        used.push(w.amt);
+        localStorage.setItem("usedWithdraw", JSON.stringify(used));
+      }
+
+      alert("✅ Withdraw Request भेज दी गई ₹" + w.amt);
+      render();
+    };
+
+    div.appendChild(btn);
+    list.appendChild(div);
   });
-
-  permanentLevels.forEach(amount=>{
-    list.innerHTML += `
-    <div class="box">
-      Withdraw ₹${amount}
-      <br><br>
-      <button onclick="withdraw(${amount}, false)">Withdraw</button>
-    </div>`;
-  });
-}
-
-function withdraw(amount, oneTime){
-  if(balance < amount){
-    alert("❌ Balance kam hai");
-    return;
-  }
-
-  balance -= amount;
-  localStorage.setItem("balance", balance);
-  document.getElementById("bal").innerText = balance;
-
-  if(oneTime){
-    used.push(amount);
-    localStorage.setItem("usedWithdraw", JSON.stringify(used));
-  }
-
-  alert("✅ Withdraw Request Sent ₹" + amount);
-  render();
 }
 
 render();

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Captcha</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="app">
+<div class="topbar">Captcha Task</div>
+
+<div class="container">
+  <div class="card">
+    <p>Solve: <b>1234</b></p>
+    <input class="input" id="cap">
+    <button class="btn" onclick="solve()">Submit</button>
+  </div>
+</div>
+
+<script>
+let capCount = localStorage.getItem("cap") || 0;
+
+function solve(){
+  if(capCount>=3){ alert("Limit over"); return; }
+
+  let bal = Number(localStorage.getItem("balance")||0);
+  bal+=2;
+  localStorage.setItem("balance",bal);
+  capCount++;
+  localStorage.setItem("cap",capCount);
+
+  alert("₹2 Added");
+}
+</script>
+</body>
+</html>

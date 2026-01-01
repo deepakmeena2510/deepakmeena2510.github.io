@@ -1,57 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Daily Tasks</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home</title>
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="app">
+<div class="topbar">Earning App</div>
 
-<h1>Daily Tasks</h1>
-
-<p>Balance: ₹<span id="bal">0</span></p>
-
-<button onclick="earn()">Click & Earn ₹2</button>
-<br><br>
-
-<button onclick="goWallet()">Go to Wallet</button>
-<br><br>
-
-<button onclick="goSettings()">⚙ Settings</button>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<div class="container grid">
+  <button class="btn" onclick="go('spin.html')">🎡 Spin</button>
+  <button class="btn" onclick="go('captcha.html')">🧩 Captcha</button>
+  <button class="btn" onclick="go('wallet.html')">💰 Wallet</button>
+  <button class="btn" onclick="go('settings.html')">⚙️ Settings</button>
+</div>
 
 <script>
-firebase.initializeApp({
-  apiKey: "PASTE_KEY",
-  authDomain: "PASTE_DOMAIN",
-  projectId: "PASTE_PROJECT_ID",
-  appId: "PASTE_APP_ID"
-});
-
-firebase.auth().onAuthStateChanged(user=>{
-  if(!user) location.href="index.html";
-});
-
-let bal = localStorage.getItem("balance") || 0;
-document.getElementById("bal").innerText = bal;
-
-function earn(){
-  bal = Number(bal) + 2;
-  localStorage.setItem("balance", bal);
-  document.getElementById("bal").innerText = bal;
-}
-
-function goWallet(){
-  location.href="wallet.html";
-}
-
-function goSettings(){
-  location.href="settings.html";
-}
+function go(p){ window.location=p; }
 </script>
-
 </body>
 </html>

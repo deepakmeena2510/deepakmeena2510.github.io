@@ -1,155 +1,284 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Wallet</title>
+<title>Pro Wallet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{margin:0;font-family:Arial;background:#f2f2f2}
-.header{background:#16a085;color:#fff;padding:15px;text-align:center;font-size:20px}
-.box{background:#fff;margin:15px;padding:15px;border-radius:12px}
-.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.btn{background:#2ecc71;color:#fff;border:none;padding:8px 16px;border-radius:20px}
+:root {
+  --primary: #16a085;
+  --secondary: #2ecc71;
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #2c3e50;
+}
 
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
-.card{background:#fff;width:85%;padding:20px;border-radius:12px;text-align:center}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 80px; /* Space for bottom nav */
+}
 
-input,select{width:100%;padding:10px;margin-top:8px}
-.spinner{width:40px;height:40px;border:4px solid #ddd;border-top:4px solid #16a085;
-border-radius:50%;animation:spin 1s linear infinite;margin:auto}
-@keyframes spin{100%{transform:rotate(360deg)}}
+/* Header with Gradient */
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  padding: 30px 15px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 0 0 25px 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
-.pending{color:orange}
-.success{color:green}
-.fail{color:red}
+/* Balance Card */
+.balance-card {
+  background: var(--card);
+  margin: -25px 20px 20px;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.balance-card span {
+  font-size: 32px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* Withdraw List */
+.section-title { margin: 20px; font-size: 18px; color: #7f8c8d; }
+
+.withdraw-row {
+  background: var(--card);
+  margin: 10px 20px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s;
+  border: 1px solid #eee;
+}
+
+.withdraw-row:active { transform: scale(0.97); }
+
+.amount-text { font-size: 18px; font-weight: 600; }
+
+.btn-withdraw {
+  background: linear-gradient(to right, var(--secondary), #27ae60);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}
+
+/* Popup Overlay */
+.popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.card {
+  background: #fff;
+  width: 85%;
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/* Custom Bottom Nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; width: 100%;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid #eee;
+}
+
+.nav-item { text-align: center; color: #95a5a6; font-size: 12px; text-decoration: none; }
+.nav-item.active { color: var(--primary); }
+
+/* Status Classes */
+.pending { color: #f39c12; font-weight: bold; }
+.success { color: #27ae60; font-weight: bold; }
+.fail { color: #e74c3c; font-weight: bold; }
+
+.spinner {
+  width: 50px; height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+@keyframes spin { 100% { transform: rotate(3600deg); } }
 </style>
 </head>
 
 <body>
 
-<div class="header">💼 Wallet</div>
+<div class="header">💰 Cash Wallet</div>
 
-<div class="box">
-💰 Balance: ₹ <span id="bal">0</span>
+<div class="balance-card">
+  <p style="margin:0; color:#95a5a6;">Main Balance</p>
+  ₹ <span id="bal">0</span>
 </div>
 
-<div class="box" id="withdrawList"></div>
+<div class="section-title">Withdrawal Options</div>
+<div id="withdrawList"></div>
 
-<!-- Withdraw Popup -->
 <div class="popup" id="payPopup">
   <div class="card">
-    <h3>Withdraw</h3>
-
-    <input id="amountInput" placeholder="Enter Amount ₹">
-    <input id="upi" placeholder="Enter UPI ID">
+    <h3 style="margin-top:0">Redeem Money</h3>
+    <input id="amountInput" readonly style="background:#f9f9f9; text-align:center; font-weight:bold;">
+    <input id="upi" placeholder="Enter UPI ID (e.g. name@ybl)">
 
     <select id="method">
       <option value="">Select Method</option>
-      <option>UPI</option>
-      <option>Paytm</option>
-      <option>PhonePe</option>
+      <option>Paytm Wallet</option>
+      <option>PhonePe / UPI</option>
       <option>Google Pay</option>
     </select>
 
     <br><br>
-    <button class="btn" onclick="confirmWithdraw()">Confirm</button>
+    <button class="btn-withdraw" style="width:100%" onclick="confirmWithdraw()">Withdraw Now</button>
+    <p style="color:red; cursor:pointer; margin-top:15px;" onclick="payPopup.style.display='none'">Cancel</p>
   </div>
 </div>
 
-<!-- Status Popup -->
 <div class="popup" id="statusPopup">
   <div class="card">
     <div id="loader" class="spinner"></div>
-    <p id="statusText">Processing</p>
+    <p id="statusText" style="font-size:18px">Processing...</p>
   </div>
 </div>
 
+<div class="bottom-nav">
+  <a href="home.html" class="nav-item">🏠<br>Home</a>
+  <a href="Withdraw.html" class="nav-item active">💼<br>Wallet</a>
+  <a href="refer.html" class="nav-item">👥<br>Refer</a>
+  <a href="history.html" class="nav-item">📋<br>History</a>
+</div>
+
 <script>
-// ===== INITIAL =====
+// Data Initialization
 if(!localStorage.getItem("balance")){
-  localStorage.setItem("balance",500);
+  localStorage.setItem("balance", 500);
 }
 let balance = Number(localStorage.getItem("balance"));
-bal.innerText = balance;
+document.getElementById("bal").innerText = balance;
 
 let usedLevels = JSON.parse(localStorage.getItem("usedLevels") || "[]");
-let amounts = [10,30,50,100,200,500];
+let amounts = [10, 30, 50, 100, 200, 500];
 
-// ===== SHOW AMOUNTS =====
 function renderWithdraw(){
-  withdrawList.innerHTML="";
-  amounts.forEach(a=>{
-    if(a<=100 && usedLevels.includes(a)) return;
+  const list = document.getElementById("withdrawList");
+  list.innerHTML = "";
+  amounts.forEach(a => {
+    // Rule: ₹10 to ₹100 remove after one use
+    if(a <= 100 && usedLevels.includes(a)) return;
 
-    let d=document.createElement("div");
-    d.className="row";
-    d.innerHTML=`₹ ${a} <button class="btn">Withdraw</button>`;
-    d.querySelector("button").onclick=()=>{
-      amountInput.value=a;
-      payPopup.style.display="flex";
+    let div = document.createElement("div");
+    div.className = "withdraw-row";
+    div.innerHTML = `
+      <div class="amount-text">₹ ${a}</div>
+      <button class="btn-withdraw">Withdraw</button>
+    `;
+    div.querySelector("button").onclick = () => {
+      document.getElementById("amountInput").value = "Amount: ₹" + a;
+      document.getElementById("amountInput").dataset.val = a;
+      document.getElementById("payPopup").style.display = "flex";
     };
-    withdrawList.appendChild(d);
+    list.appendChild(div);
   });
 }
-renderWithdraw();
 
-// ===== CONFIRM =====
 function confirmWithdraw(){
-  let amt = Number(amountInput.value);
-  let upiId = upi.value.trim();
-  let m = method.value;
+  let amt = Number(document.getElementById("amountInput").dataset.val);
+  let upiId = document.getElementById("upi").value.trim();
+  let m = document.getElementById("method").value;
 
-  if(!amt || !upiId || !m){
-    showStatus("❌ Details भरें","fail");
-    return;
-  }
-  if(!upiId.includes("@")){
-    showStatus("❌ Invalid UPI","fail");
+  if(!upiId || !m){
+    showStatus("❌ Details bhariye!","fail");
     return;
   }
   if(balance < amt){
-    showStatus("❌ Balance कम है","fail");
+    showStatus("❌ Balance kam hai!","fail");
     return;
   }
 
-  payPopup.style.display="none";
-  showStatus("⏳ Processing","pending");
+  document.getElementById("payPopup").style.display = "none";
+  showStatus("⏳ Processing...","pending");
 
-  setTimeout(()=>{
-    showStatus("🔔 Pending","pending");
-  },1500);
+  // Step 1: Processing Status
+  setTimeout(() => {
+    showStatus("🔔 Payment Pending...","pending");
+  }, 2000);
 
-  setTimeout(()=>{
+  // Step 2: Final Status Update
+  setTimeout(() => {
     balance -= amt;
-    localStorage.setItem("balance",balance);
-    bal.innerText = balance;
+    localStorage.setItem("balance", balance);
+    document.getElementById("bal").innerText = balance;
 
-    if(amt<=100 && !usedLevels.includes(amt)){
+    // Save used level for ₹10-₹100
+    if(amt <= 100 && !usedLevels.includes(amt)){
       usedLevels.push(amt);
-      localStorage.setItem("usedLevels",JSON.stringify(usedLevels));
+      localStorage.setItem("usedLevels", JSON.stringify(usedLevels));
     }
 
-    showStatus("✅ Payment Successful","success");
+    showStatus("✅ Success! ₹" + amt + " Sent","success");
     renderWithdraw();
-  },3000);
+  }, 4500);
 }
 
-// ===== STATUS =====
-function showStatus(msg,type){
-  statusPopup.style.display="flex";
-  statusText.innerText=msg;
-  statusText.className=type;
-  loader.style.display=(type==="pending")?"block":"none";
+function showStatus(msg, type){
+  const pop = document.getElementById("statusPopup");
+  const txt = document.getElementById("statusText");
+  const lod = document.getElementById("loader");
 
-  if(type!=="pending"){
-    setTimeout(()=>{
-      statusPopup.style.display="none";
-      loader.style.display="block";
-    },2000);
+  pop.style.display = "flex";
+  txt.innerText = msg;
+  txt.className = type;
+  lod.style.display = (type === "pending") ? "block" : "none";
+
+  if(type !== "pending"){
+    setTimeout(() => {
+      pop.style.display = "none";
+    }, 2500);
   }
 }
+
+renderWithdraw();
 </script>
 
 </body>

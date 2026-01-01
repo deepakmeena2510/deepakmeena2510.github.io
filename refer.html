@@ -1,4 +1,150 @@
-<h2>Referral</h2>
-<p>Your Code: <b>DP12345</b></p>
-<button onclick="referralJoin()">Friend Joined (Demo)</button>
-<script src="js/app.js"></script>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Refer & Earn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --primary: #27ae60;
+  --secondary: #2ecc71;
+  --bg: #f4f7f6;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  text-align: center;
+}
+
+.header {
+  background: var(--primary);
+  color: white;
+  padding: 40px 20px;
+  border-radius: 0 0 30px 30px;
+}
+
+.promo-box {
+  background: white;
+  width: 85%;
+  margin: -30px auto 20px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.ref-code-container {
+  border: 2px dashed #bdc3c7;
+  padding: 15px;
+  margin: 15px 0;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--primary);
+  background: #f9f9f9;
+}
+
+.share-btn {
+  background: #25D366; /* WhatsApp Green */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 80%;
+  margin-top: 10px;
+}
+
+.steps {
+  text-align: left;
+  padding: 20px;
+  margin: 20px;
+  background: white;
+  border-radius: 10px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.step-num {
+  background: var(--primary);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>Refer & Earn</h1>
+  <p>Apne doston ko invite karein aur paise kamayein!</p>
+</div>
+
+<div class="promo-box">
+  <p style="color:#7f8c8d; margin-bottom:5px;">Aapka Referral Code</p>
+  <div class="ref-code-container" id="refCode">LOADING...</div>
+  <button class="share-btn" onclick="shareOnWhatsApp()">Invite on WhatsApp</button>
+</div>
+
+<div class="steps">
+  <h3 style="margin-top:0">Kaise Kaam Karta Hai?</h3>
+  <div class="step-item">
+    <div class="step-num">1</div>
+    <div>Apna link doston ke saath share karein.</div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">2</div>
+    <div>Dost aapke code se register karega.</div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">3</div>
+    <div>Har safal referral par aapko <b>₹5.00</b> milenge.</div>
+  </div>
+</div>
+
+<script>
+// 1. User ke liye ek Unique Code banana
+function generateReferCode() {
+    let savedCode = localStorage.getItem("userReferCode");
+    if (!savedCode) {
+        // Agar pehle se code nahi hai toh naya banayein (Example: EARN1234)
+        savedCode = "EARN" + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem("userReferCode", savedCode);
+    }
+    document.getElementById("refCode").innerText = savedCode;
+    return savedCode;
+}
+
+// 2. WhatsApp par share karne ka logic
+function shareOnWhatsApp() {
+    const code = document.getElementById("refCode").innerText;
+    const appLink = window.location.origin; // Website ka URL
+    const message = `🔥 *Earn Money Daily!* 🔥\n\nMera referral code use karein: *${code}*\n\nAbhi join karein aur kamaana shuru karein: ${appLink}`;
+    
+    const whatsappUrl = `https://api.whatsapp.com/whatsapp://send?text=${encodeURIComponent(message)}`;
+    
+    // Mobile par app kholne ki koshish karega
+    window.open(whatsappUrl, '_blank');
+}
+
+// Page load hone par code dikhayein
+window.onload = generateReferCode;
+</script>
+
+</body>
+</html>

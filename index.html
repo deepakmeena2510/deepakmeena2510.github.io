@@ -5,22 +5,42 @@
 <title>Daily Tasks</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<h2>Daily Tasks</h2>
-<p>Balance: ₹<span class="bal">0</span></p>
+<div class="header">
+  <div class="balance">
+    Balance: ₹<span class="bal">0</span>
+  </div>
 
-<button onclick="clickEarn()">Click & Earn ₹2</button>
-<button onclick="dailyBonus()">Daily Bonus ₹1</button>
+  <button class="btn" onclick="clickEarn()">Click & Earn ₹2</button>
+  <button class="btn blue" onclick="dailyBonus()">Daily Bonus ₹1</button>
+</div>
 
-<br><br>
-<a href="scratch.html">🎟 Scratch & Earn</a><br>
-<a href="refer.html">👥 Referral</a><br>
-<a href="level.html">🆙 Level</a><br>
-<a href="history.html">📜 History</a><br>
-<a href="wallet.html">💰 Wallet</a>
+<div class="card">
+  <a href="scratch.html">🎟 Scratch & Earn</a>
+</div>
+
+<div class="card">
+  <a href="refer.html">👥 Referral</a>
+</div>
+
+<div class="card">
+  <a href="level.html">🆙 Level</a>
+</div>
+
+<div class="card">
+  <a href="history.html">📜 History</a>
+</div>
+
+<div class="card">
+  <a href="wallet.html">💰 Wallet</a>
+</div>
 
 <script src="js/app.js"></script>
-<script>updateBalance();</script>
+<script>
+updateBalance();
+</script>
+
 </body>
 </html>

@@ -1,37 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <title>Wallet</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="app">
+<div class="topbar">Wallet</div>
 
-<h2>Wallet</h2>
+<div class="container">
+  <div class="card">
+    <h2>Balance: ₹ <span id="bal">0</span></h2>
+  </div>
 
-<p>Balance: ₹<span id="bal">0</span></p>
-
-<input placeholder="Enter UPI ID">
-<br><br>
-
-<button onclick="withdraw()">Withdraw</button>
-<br><br>
-
-<button onclick="back()">⬅ Back</button>
+  <button class="btn" onclick="withdraw()">Withdraw ₹50</button>
+</div>
 
 <script>
-document.getElementById("bal").innerText =
-  localStorage.getItem("balance") || 0;
+document.getElementById("bal").innerText=
+localStorage.getItem("balance")||0;
 
 function withdraw(){
   alert("Withdraw request sent (Demo)");
 }
-
-function back(){
-  history.back();   // 🔥 REAL BACK
-}
 </script>
-
 </body>
 </html>
